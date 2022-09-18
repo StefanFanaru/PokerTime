@@ -1,0 +1,83 @@
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  buildConfiguration: "Debug"
+
+stages:
+  - stage: Build
+    displayName: "Build and test"
+    jobs:
+      - job: Build
+        displayName: "Build and test"
+        steps:
+          - script: dir $(Build.SourcesDirectory)
+          - task: DotNetCoreCLI@2
+            displayName: "Restore"
+            inputs:
+              command: restore
+              projects: "**/*.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build"
+            inputs:
+              command: build
+              projects: "**/*.csproj"
+              arguments: "--configuration $(buildConfiguration)"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Prepare artifacts"
+            inputs:
+              command: publish
+              publishWebProjects: True
+              arguments: "--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)"
+              zipAfterPublish: false
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish artifacts"
+            inputs:
+              pathtoPublish: "$(Build.ArtifactStagingDirectory)"
+              artifactName: "drop"
+
+  - stage: Deploy
+    displayName: "Deploy to Linux VM"
+    jobs:
+      - job: Prepare
+        displayName: "Prepare VM for deployment"
+        steps:
+          - task: InstallSSHKey@0
+            displayName: 'Install an SSH key'
+            inputs:
+              sshKeySecureFile: $(sshKeySecureFile)
+              addEntryToConfig: true
+              configHostAlias: $(configHostAlias)
+              configHostname: $(configHostname)
+              configUser: azure
+              configPort: 22
+              knownHostsEntry: $(knownHostsEntry)
+          - task: DownloadPipelineArtifact@2
+            displayName: "Download artifacts"
+            inputs:
+              artifactName: drop
+              path: "$(Build.ArtifactStagingDirectory)"
+          - task: FileTransform@1
+            inputs:
+              folderPath: '$(Build.ArtifactStagingDirectory)'
+              fileType: 'json'
+              targetFiles: '**/appsettings.json'
+          - task: SSH@0
+            displayName: 'Stop service'
+            inputs:
+              sshEndpoint: $(configHostAlias)
+              commands: $(stopService)
+          - task: CopyFilesOverSSH@0
+            displayName: 'Securely copy artifacts'
+            inputs:
+              sshEndpoint: $(configHostAlias)
+              sourceFolder: '$(Build.ArtifactStagingDirectory)'
+              targetFolder: /var/www
+          - task: SSH@0
+            displayName: 'Start service'
+            inputs:
+              sshEndpoint: $(configHostAlias)
+              commands: $(startService)
