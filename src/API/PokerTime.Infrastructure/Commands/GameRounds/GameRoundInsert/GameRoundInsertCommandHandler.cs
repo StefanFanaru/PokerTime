@@ -42,16 +42,16 @@ public class GameRoundInsertCommandHandler : IRequestHandler<GameRoundInsertComm
         var activePlayersIds = gamePlayersIds
             .Where(x => _signalRConnectionManager.IsUserConnectedToGame(x, request.GameId.ToString())).ToList();
 
+        if (!activePlayersIds.Contains(request.User.Id))
+        {
+            activePlayersIds.Add(request.User.Id);
+        }
+
         if (!string.IsNullOrWhiteSpace(roundId))
         {
             if (!await query.AnyAsync(x => x.Players.Any(p => p.PlayerId == request.User.Id), cancellationToken))
             {
                 await InsertRoundPlayer(roundId, request.User.Id);
-            }
-
-            if (!activePlayersIds.Contains(request.User.Id))
-            {
-                activePlayersIds.Add(request.User.Id);
             }
 
             var result = await query.Select(x => new GameRoundInsertCommandResponse
