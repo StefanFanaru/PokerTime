@@ -72,7 +72,7 @@ namespace PokerTime.API
 
             app.UseCors(policy =>
             {
-                var allowedOrigins = Configuration.GetValue<string[]>("AllowedCorsOrigins");
+                var allowedOrigins = Configuration.GetSection("AllowedCorsOrigins").Get<string[]>();
                 foreach (var allowedOrigin in allowedOrigins)
                 {
                     policy.WithOrigins(allowedOrigin);
