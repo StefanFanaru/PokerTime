@@ -2,5 +2,21 @@
   "id": "poker-time",
   "public": true,
   "name": "PokerTime",
-  "version": "1.0.0"
+  "version": "1.0.5",
+  "contributions": [
+    {
+      "id": "poker-time-hub",
+      "type": "ms.vss-web.hub",
+      "description": "PokerTime Hub",
+      "targets": [
+        "ms.vss-work-web.work-hub-group"
+      ],
+      "properties": {
+        "name": "PokerTime",
+        "uri": "/dist/index.html",
+        "supportsMobile": true,
+        "iconName": "RadioBtnOn"
+      }
+    }
+  ]
 }

@@ -13,6 +13,7 @@
     "package:dev": "tfx extension create --manifest-globs vss-extension.json --overrides-file configs/dev.json --output-path out",
     "publish": "npm run compile && tfx extension publish --manifest-globs vss-extension.json --overrides-file configs/prod.json --output-path out",
     "publish:dev": "npm run compile:dev && tfx extension publish --manifest-globs vss-extension.json --overrides-file configs/dev.json --output-path out",
+    "push": "tfx extension publish --manifest-globs vss-extension.json --overrides-file configs/prod.json --output-path out",
     "push:dev": "tfx extension publish --manifest-globs vss-extension.json --overrides-file configs/dev.json --output-path out",
     "start": "webpack serve --mode development --port 3000 --env ENVIRONMENT=local --config webpack.config.local.js",
     "build:analyze": "npm run compile -- --env ANALYZE=true"

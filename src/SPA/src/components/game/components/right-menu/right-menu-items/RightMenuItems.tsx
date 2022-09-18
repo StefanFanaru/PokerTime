@@ -1,20 +1,20 @@
 ﻿import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './right-menu-items.scss';
-import { Tooltip } from 'azure-devops-ui/TooltipEx';
-import { WorkItemType } from '../../../../../types/work-items/work-item-type';
+import {Tooltip} from 'azure-devops-ui/TooltipEx';
+import {WorkItemType} from '../../../../../types/work-items/work-item-type';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { IListWorkItem } from '../../../../../types/work-items/list-work-item';
-import { actionCreators as currentRoundActionsCreators } from '../../../../../store/CurrentRound';
-import { bindActionCreators } from 'redux';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../store';
-import { GameStatus } from '../../../../../types/game-status';
-import { sendSignalREvent, subscribeToClientEvents } from '../../../../../services/signalr';
-import { RoundStoryPointsSetEvent } from '../../../../../types/client-events/round-story-points-set-event';
-import { ClientEventType } from '../../../../../types/client-events/signalREvent';
-import { IWorkItemSelectedEvent } from '../../../../../types/client-events/work-item-selecte';
-import { bookIcon, bugIcon, eyeIcon } from '../../../../../helpers/svgIcons';
+import {IListWorkItem} from '../../../../../types/work-items/list-work-item';
+import {actionCreators as currentRoundActionsCreators} from '../../../../../store/CurrentRound';
+import {bindActionCreators} from 'redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppState} from '../../../../../store';
+import {GameStatus} from '../../../../../types/game-status';
+import {sendSignalREvent, subscribeToClientEvents} from '../../../../../services/signalr';
+import {RoundStoryPointsSetEvent} from '../../../../../types/client-events/round-story-points-set-event';
+import {ClientEventType} from '../../../../../types/client-events/signalREvent';
+import {IWorkItemSelectedEvent} from '../../../../../types/client-events/work-item-selecte';
+import {bookIcon, bugIcon, eyeIcon} from '../../../../../helpers/svgIcons';
 
 interface IProps {
 	isAdmin: boolean;
@@ -32,13 +32,13 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 	});
 
 	const dispatch = useDispatch();
-	const { setActiveWorkItem, setActiveWorkItemId, setActiveWorkItemStoryPoints } = bindActionCreators(
+	const {setActiveWorkItem, setActiveWorkItemId, setActiveWorkItemStoryPoints} = bindActionCreators(
 		currentRoundActionsCreators,
 		dispatch
 	);
 
-	const { activeWorkItemId } = useSelector((state: AppState) => state.currentRound);
-	const { gameDetails } = useSelector((state: AppState) => state.currentGame);
+	const {activeWorkItemId} = useSelector((state: AppState) => state.currentRound);
+	const {gameDetails} = useSelector((state: AppState) => state.currentGame);
 
 	useEffect(() => {
 		if (!gameDetails?.id) {
@@ -48,7 +48,7 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 			setState(prevState => {
 				const workItem = prevState.workItems.find(item => item.id === event.workItemId)!;
 				workItem.points = event.submittedStoryPoints;
-				return { ...prevState, workItems: [...prevState.workItems] };
+				return {...prevState, workItems: [...prevState.workItems]};
 			});
 		}, ClientEventType.RoundStoryPointsSet);
 
@@ -76,6 +76,11 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 			if (gameDetails?.activeWorkItemId && !gameDetails?.isOwner) {
 				const workItem = props.workItems.find(item => item.id === gameDetails.activeWorkItemId)!;
 				workItem.isSelected = true;
+			}
+
+			if (activeWorkItemId) {
+				const workItem = props.workItems.find(item => item.id === activeWorkItemId)!;
+				workItem.isActive = true;
 			}
 
 			return {
@@ -120,7 +125,7 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 
 		setActiveWorkItemStoryPoints(workItem.points);
 
-		setState(prevState => ({ ...prevState, workItems: [...state.workItems] }));
+		setState(prevState => ({...prevState, workItems: [...state.workItems]}));
 	}, [activeWorkItemId]);
 
 	async function onItemClick(item: IListWorkItem) {

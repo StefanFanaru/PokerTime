@@ -3,5 +3,21 @@
   "public": false,
   "baseUri": "https://192.168.100.99:3000",
   "name": "PokerTimeDev",
-  "version": "1.0.23"
+  "version": "1.0.25",
+  "contributions": [
+    {
+      "id": "poker-time-hub-dev",
+      "type": "ms.vss-web.hub",
+      "description": "PokerTime Hub Dev",
+      "targets": [
+        "ms.vss-work-web.work-hub-group"
+      ],
+      "properties": {
+        "name": "PokerTime Dev",
+        "uri": "/",
+        "supportsMobile": true,
+        "iconName": "RadioBtnOn"
+      }
+    }
+  ]
 }

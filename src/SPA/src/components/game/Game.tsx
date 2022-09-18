@@ -1,28 +1,28 @@
 ﻿import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './game.scss';
 import RightMenu from './components/right-menu/RightMenu';
 import GameContent from './components/game-content/GameContent';
-import { useParams } from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import useAxios from 'axios-hooks';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../store';
-import { IGameDetails } from '../../types/game-details';
-import { bindActionCreators } from 'redux';
-import { actionCreators as currentGameActionsCreators } from '../../store/CurrentGame';
-import { actionCreators as currentRoundActionsCreators } from '../../store/CurrentRound';
-import { actionCreators as gameInfoActionCreators } from '../../store/GameInfoCards';
-import { getClient } from 'azure-devops-extension-api';
-import { WorkRestClient } from 'azure-devops-extension-api/Work';
-import { WorkItemErrorPolicy, WorkItemExpand, WorkItemTrackingRestClient } from 'azure-devops-extension-api/WorkItemTracking';
-import { IListWorkItem } from '../../types/work-items/list-work-item';
-import { IWorkItemDetails } from '../../types/work-items/work-item-details';
-import { GameStatus } from '../../types/game-status';
-import { IGameRoundInsertResponse } from '../../types/game-round/round-insert-response';
-import { startSignalRConnection, subscribeToClientEvents } from '../../services/signalr';
-import { ClientEventType } from '../../types/client-events/signalREvent';
-import { PauseToggledEvent } from '../../types/client-events/pause-toggled-event';
-import { GameEndedEvent } from '../../types/client-events/game-ended';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppState} from '../../store';
+import {IGameDetails} from '../../types/game-details';
+import {bindActionCreators} from 'redux';
+import {actionCreators as currentGameActionsCreators} from '../../store/CurrentGame';
+import {actionCreators as currentRoundActionsCreators} from '../../store/CurrentRound';
+import {actionCreators as gameInfoActionCreators} from '../../store/GameInfoCards';
+import {getClient} from 'azure-devops-extension-api';
+import {WorkRestClient} from 'azure-devops-extension-api/Work';
+import {WorkItemErrorPolicy, WorkItemExpand, WorkItemTrackingRestClient} from 'azure-devops-extension-api/WorkItemTracking';
+import {IListWorkItem} from '../../types/work-items/list-work-item';
+import {IWorkItemDetails} from '../../types/work-items/work-item-details';
+import {GameStatus} from '../../types/game-status';
+import {IGameRoundInsertResponse} from '../../types/game-round/round-insert-response';
+import {startSignalRConnection, subscribeToClientEvents} from '../../services/signalr';
+import {ClientEventType} from '../../types/client-events/signalREvent';
+import {PauseToggledEvent} from '../../types/client-events/pause-toggled-event';
+import {GameEndedEvent} from '../../types/client-events/game-ended';
 import GameEndedDialog from '../dialogs/game-ended/GameEndedDialog';
 
 interface State {
@@ -33,20 +33,20 @@ interface State {
 }
 
 const Game = (): JSX.Element => {
-	let { id } = useParams<{ id: string }>();
+	let {id} = useParams<{id: string}>();
 	const dispatch = useDispatch();
-	const { setGameDetails } = bindActionCreators(currentGameActionsCreators, dispatch);
-	const { setActiveWorkItem, setActiveWorkItemId, setRoundId, setActiveWorkItemStoryPoints, setCardsWereFlipped } =
+	const {setGameDetails} = bindActionCreators(currentGameActionsCreators, dispatch);
+	const {setActiveWorkItem, setActiveWorkItemId, setRoundId, setActiveWorkItemStoryPoints, setCardsWereFlipped} =
 		bindActionCreators(currentRoundActionsCreators, dispatch);
-	const { setIsPaused, setGameStatus, setShouldRefreshGame } = bindActionCreators(currentGameActionsCreators, dispatch);
-	const { setCommitment, setPlayedRoundsCount, setVelocity, setTotalRoundsCount, setActivePlayersIds } = bindActionCreators(
+	const {setIsPaused, setGameStatus, setShouldRefreshGame} = bindActionCreators(currentGameActionsCreators, dispatch);
+	const {setCommitment, setPlayedRoundsCount, setVelocity, setTotalRoundsCount, setActivePlayersIds} = bindActionCreators(
 		gameInfoActionCreators,
 		dispatch
 	);
 
-	const { details: projectDetails } = useSelector((state: AppState) => state.projectInfo);
-	const { activeWorkItem, activeWorkItemStoryPoints } = useSelector((state: AppState) => state.currentRound);
-	const { gameDetails, shouldRefreshGame } = useSelector((state: AppState) => state.currentGame);
+	const {details: projectDetails} = useSelector((state: AppState) => state.projectInfo);
+	const {activeWorkItem, activeWorkItemStoryPoints} = useSelector((state: AppState) => state.currentRound);
+	const {gameDetails, shouldRefreshGame} = useSelector((state: AppState) => state.currentGame);
 	const [state, setState] = useState<State>({
 		workItemsDetailed: [],
 		workItemLists: []
@@ -56,16 +56,16 @@ const Game = (): JSX.Element => {
 		{
 			url: '/api/game/details'
 		},
-		{ manual: true }
+		{manual: true}
 	);
 
-	const [{ data: gameRoundInsertResponse, loading: isGameRoundInsertLoading }, postGameRoundInsert] =
+	const [{data: gameRoundInsertResponse, loading: isGameRoundInsertLoading}, postGameRoundInsert] =
 		useAxios<IGameRoundInsertResponse>(
 			{
 				url: '/api/gameRound/insert',
 				method: 'POST'
 			},
-			{ manual: true }
+			{manual: true}
 		);
 
 	useEffect(() => {
@@ -101,7 +101,7 @@ const Game = (): JSX.Element => {
 					gameId: id
 				}
 			}).then(async response => {
-				setState(prevState => ({ ...prevState, gameDetails: response.data }));
+				setState(prevState => ({...prevState, gameDetails: response.data}));
 			});
 		}
 	}, [projectDetails, id]);
@@ -171,13 +171,12 @@ const Game = (): JSX.Element => {
 
 		subscribeToClientEvents<GameEndedEvent>(_ => {
 			setGameStatus(GameStatus.Ended);
-			setState(prevState => ({ ...prevState, isGameEndedDialogOpened: true }));
+			setState(prevState => ({...prevState, isGameEndedDialogOpened: true}));
 		}, ClientEventType.GameEnded);
 	}, [state.gameDetails]);
 
 	function onGameEndedDismiss() {
-		setState(prevState => ({ ...prevState, isGameEndedDialogOpened: false }));
-		``;
+		setState(prevState => ({...prevState, isGameEndedDialogOpened: false}));
 	}
 
 	async function refreshGame() {
@@ -188,7 +187,7 @@ const Game = (): JSX.Element => {
 			}
 		});
 
-		setState(prevState => ({ ...prevState, gameDetails: response.data }));
+		setState(prevState => ({...prevState, gameDetails: response.data}));
 		const currentActiveWorkItemId = activeWorkItem?.id!;
 		await getWorkItems(state.gameDetails!);
 		postGameRoundInsert({
@@ -242,7 +241,7 @@ const Game = (): JSX.Element => {
 			} as IListWorkItem;
 		});
 
-		setState(prevState => ({ ...prevState, workItemLists }));
+		setState(prevState => ({...prevState, workItemLists}));
 
 		const workItemsData = await getClient(WorkItemTrackingRestClient).getWorkItemsBatch(
 			{
@@ -267,12 +266,10 @@ const Game = (): JSX.Element => {
 			} as IWorkItemDetails;
 		});
 
-		setState(prevState => ({ ...prevState, workItemsDetailed }));
+		setState(prevState => ({...prevState, workItemsDetailed}));
 
 		let activeWorkItem = workItemsDetailed.find(x => x.id === gameDetails.activeWorkItemId);
-		// if (shouldRefreshWorkItems) {
-		// 	activeWorkItem = workItemsDetailed.find(x => x.id === activeWorkItem?.id);
-		// }
+
 		let roundWorkItemId = workItemsDetailed[0].id;
 		if (activeWorkItem) {
 			roundWorkItemId = activeWorkItem.id;
@@ -281,7 +278,7 @@ const Game = (): JSX.Element => {
 			setActiveWorkItemStoryPoints(activeWorkItem.points);
 		} else {
 			workItemLists[0].isActive = true;
-			setState(prevState => ({ ...prevState, workItemLists }));
+			setState(prevState => ({...prevState, workItemLists}));
 			setActiveWorkItem(workItemsDetailed[0]);
 			setActiveWorkItemId(workItemsDetailed[0].id);
 			setActiveWorkItemStoryPoints(workItemsDetailed[0].points);
@@ -301,9 +298,9 @@ const Game = (): JSX.Element => {
 
 	return (
 		<div className="game-wrapper">
-			<RightMenu workItems={state.workItemLists}/>
-			<GameContent/>
-			{state.isGameEndedDialogOpened && <GameEndedDialog gameTitle={gameDetails?.gameTitle} onDismiss={onGameEndedDismiss}/>}
+			<RightMenu workItems={state.workItemLists} />
+			<GameContent />
+			{state.isGameEndedDialogOpened && <GameEndedDialog gameTitle={gameDetails?.gameTitle} onDismiss={onGameEndedDismiss} />}
 		</div>
 	);
 };

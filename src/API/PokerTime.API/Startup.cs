@@ -70,11 +70,13 @@ namespace PokerTime.API
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-
             app.UseCors(policy =>
             {
-                policy.WithOrigins(
-                    Configuration.GetSection("ApplicationUrls:ReactClient").Value);
+                var allowedOrigins = Configuration.GetValue<string[]>("AllowedCorsOrigins");
+                foreach (var allowedOrigin in allowedOrigins)
+                {
+                    policy.WithOrigins(allowedOrigin);
+                }
 
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();

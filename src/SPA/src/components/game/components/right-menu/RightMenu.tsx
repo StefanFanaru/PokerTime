@@ -1,25 +1,25 @@
 ﻿import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './right-menu.scss';
-import { Tooltip } from 'azure-devops-ui/TooltipEx';
+import {Tooltip} from 'azure-devops-ui/TooltipEx';
 import RightMenuItems from './right-menu-items/RightMenuItems';
 import RightMenuAdminButton from './right-menu-admin-button/RightMenuAdminButton';
 import GamePointsCard from './game-points-card/GamePointsCard';
-import { isMobile } from '../../../../helpers/helpers';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../store';
-import { IListWorkItem } from '../../../../types/work-items/list-work-item';
-import { bindActionCreators } from 'redux';
-import { actionCreators as currentRoundActionsCreators } from '../../../../store/CurrentRound';
-import { actionCreators as gameInfoCardsActionCreators } from '../../../../store/GameInfoCards';
+import {isMobile} from '../../../../helpers/helpers';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppState} from '../../../../store';
+import {IListWorkItem} from '../../../../types/work-items/list-work-item';
+import {bindActionCreators} from 'redux';
+import {actionCreators as currentRoundActionsCreators} from '../../../../store/CurrentRound';
+import {actionCreators as gameInfoCardsActionCreators} from '../../../../store/GameInfoCards';
 import RightMenuTopButtons from './right-menu-top-buttons/RightMenuTopButtons';
 import useAxios from 'axios-hooks';
-import { GameStatus } from '../../../../types/game-status';
-import { IFlippedCard } from '../../../../types/flipped-card';
+import {GameStatus} from '../../../../types/game-status';
+import {IFlippedCard} from '../../../../types/flipped-card';
 import * as SDK from 'azure-devops-extension-sdk';
-import { IWorkItemFormNavigationService, WorkItemTrackingServiceIds } from 'azure-devops-extension-api/WorkItemTracking';
-import { IWorkItemDetails } from '../../../../types/work-items/work-item-details';
-import { Spinner, SpinnerSize } from 'azure-devops-ui/Spinner';
+import {IWorkItemFormNavigationService, WorkItemTrackingServiceIds} from 'azure-devops-extension-api/WorkItemTracking';
+import {IWorkItemDetails} from '../../../../types/work-items/work-item-details';
+import {Spinner, SpinnerSize} from 'azure-devops-ui/Spinner';
 
 interface IState {
 	isAdmin: boolean;
@@ -43,13 +43,13 @@ const RightMenu = (props: IProps): JSX.Element => {
 		isPreviousDisabled: true
 	});
 	const dispatch = useDispatch();
-	const { setActiveWorkItemId, setFlippedCards, setCardsWereFlipped, setActiveWorkItem, setActiveWorkItemStoryPoints } =
+	const {setActiveWorkItemId, setFlippedCards, setCardsWereFlipped, setActiveWorkItem, setActiveWorkItemStoryPoints} =
 		bindActionCreators(currentRoundActionsCreators, dispatch);
-	const { increasePlayedRoundsCount } = bindActionCreators(gameInfoCardsActionCreators, dispatch);
+	const {increasePlayedRoundsCount} = bindActionCreators(gameInfoCardsActionCreators, dispatch);
 
-	const { gameDetails, shouldRefreshGame } = useSelector((state: AppState) => state.currentGame);
-	const { isViewingImage } = useSelector((state: AppState) => state.general);
-	const { roundId, cardsWereFlipped, currentHiddenCardsCount, activeWorkItemStoryPoints, activeWorkItemId } = useSelector(
+	const {gameDetails, shouldRefreshGame} = useSelector((state: AppState) => state.currentGame);
+	const {isViewingImage} = useSelector((state: AppState) => state.general);
+	const {roundId, cardsWereFlipped, currentHiddenCardsCount, activeWorkItemStoryPoints, activeWorkItemId} = useSelector(
 		(state: AppState) => state.currentRound
 	);
 	const [{}, postGamePauseToggle] = useAxios(
@@ -57,14 +57,14 @@ const RightMenu = (props: IProps): JSX.Element => {
 			method: 'POST',
 			url: '/api/game/pause-toggle'
 		},
-		{ manual: true }
+		{manual: true}
 	);
-	const [{ response: flipCardsResponse }, flipCardsRequest] = useAxios<IFlippedCard[]>(
+	const [{response: flipCardsResponse}, flipCardsRequest] = useAxios<IFlippedCard[]>(
 		{
 			method: 'POST',
 			url: '/api/game/flip-cards'
 		},
-		{ manual: true }
+		{manual: true}
 	);
 
 	useEffect(() => {
@@ -78,21 +78,21 @@ const RightMenu = (props: IProps): JSX.Element => {
 		}
 
 		workItem.points = activeWorkItemStoryPoints;
-		setState(prevState => ({ ...prevState, workItems: [...props.workItems] }));
+		setState(prevState => ({...prevState, workItems: [...props.workItems]}));
 	}, [activeWorkItemStoryPoints]);
 
 	useEffect(() => {
 		if (!flipCardsResponse) {
 			return;
 		}
-		setState(prevState => ({ ...prevState, areCardsFlipped: true }));
+		setState(prevState => ({...prevState, areCardsFlipped: true}));
 		setFlippedCards(flipCardsResponse.data);
 		setCardsWereFlipped(true);
 		increasePlayedRoundsCount();
 	}, [flipCardsResponse]);
 
 	useEffect(() => {
-		setState(prevState => ({ ...prevState, areCardsFlipped: cardsWereFlipped }));
+		setState(prevState => ({...prevState, areCardsFlipped: cardsWereFlipped}));
 	}, [cardsWereFlipped]);
 
 	useEffect(() => {
@@ -122,7 +122,7 @@ const RightMenu = (props: IProps): JSX.Element => {
 	}, [gameDetails?.status]);
 
 	function onExpandToggle() {
-		setState(prevState => ({ ...prevState, isExpanded: !prevState.isExpanded }));
+		setState(prevState => ({...prevState, isExpanded: !prevState.isExpanded}));
 	}
 
 	useEffect(() => {
@@ -136,7 +136,7 @@ const RightMenu = (props: IProps): JSX.Element => {
 
 	useEffect(() => {
 		if (gameDetails) {
-			setState(prevState => ({ ...prevState, isAdmin: gameDetails.isOwner }));
+			setState(prevState => ({...prevState, isAdmin: gameDetails.isOwner}));
 		}
 	}, [gameDetails]);
 
@@ -161,11 +161,11 @@ const RightMenu = (props: IProps): JSX.Element => {
 		}
 
 		if (window.innerWidth > 1200 && !state.isExpanded) {
-			setState(prevState => ({ ...prevState, isExpanded: true }));
+			setState(prevState => ({...prevState, isExpanded: true}));
 		}
 
 		if (window.innerWidth < 1200 && state.isExpanded) {
-			setState(prevState => ({ ...prevState, isExpanded: false }));
+			setState(prevState => ({...prevState, isExpanded: false}));
 		}
 	};
 
@@ -241,7 +241,7 @@ const RightMenu = (props: IProps): JSX.Element => {
 
 	return (
 		<div id="right-menu-retractable" className={'right-menu-wrapper ' + (state.isExpanded ? '' : 'retracted')}>
-			{shouldRefreshGame && <Spinner size={SpinnerSize.medium} className="spinner-items"/>}
+			{shouldRefreshGame && <Spinner size={SpinnerSize.medium} className="spinner-items" />}
 			<div className="top">
 				<div className="title">
 					<Tooltip overflowOnly={true} delayMs={500} text={gameDetails?.gameTitle}>
@@ -250,13 +250,13 @@ const RightMenu = (props: IProps): JSX.Element => {
 						</span>
 					</Tooltip>
 				</div>
-				<RightMenuTopButtons isExpanded={state.isExpanded} onExpandToggle={onExpandToggle}/>
+				<RightMenuTopButtons isExpanded={state.isExpanded} onExpandToggle={onExpandToggle} />
 			</div>
 			<div className="separator"></div>
-			<RightMenuItems workItems={props.workItems} isAdmin={state.isAdmin} isExpanded={state.isExpanded}/>
+			<RightMenuItems workItems={props.workItems} isAdmin={state.isAdmin} isExpanded={state.isExpanded} />
 			{state.isAdmin && state.isExpanded && (
 				<div className="admin-buttons-wrapper">
-					<GamePointsCard/>
+					<GamePointsCard />
 					<div className="admin-buttons">
 						<RightMenuAdminButton
 							onClick={onPreviousClick}
@@ -269,8 +269,13 @@ const RightMenu = (props: IProps): JSX.Element => {
 							text={state.isPaused ? 'Resume' : 'Pause'}
 							icon={state.isPaused ? 'Play' : 'Pause'}
 						/>
-						<RightMenuAdminButton onClick={onNextClick} text="Next" icon="Next" isDisabled={state.isNextDisabled}/>
-						<RightMenuAdminButton onClick={onEditClick} text="Edit" icon="Edit" isDisabled={state.isEditDisabled}/>
+						<RightMenuAdminButton onClick={onNextClick} text="Next" icon="Next" isDisabled={state.isNextDisabled} />
+						<RightMenuAdminButton
+							onClick={onEditClick}
+							text="Edit"
+							icon="Edit"
+							isDisabled={state.isEditDisabled || state.isPaused}
+						/>
 						<RightMenuAdminButton
 							onClick={onFlipClick}
 							text="Flip"

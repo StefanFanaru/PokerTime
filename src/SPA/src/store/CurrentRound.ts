@@ -1,6 +1,6 @@
-﻿import { IWorkItemDetails } from '../types/work-items/work-item-details';
-import { IFlippedCard } from '../types/flipped-card';
-import { IPlayedCard } from '../types/played-card';
+﻿import {IWorkItemDetails} from '../types/work-items/work-item-details';
+import {IFlippedCard} from '../types/flipped-card';
+import {IPlayedCard} from '../types/played-card';
 
 const SET_WORK_ITEM_DETAILS = 'SET_WORK_ITEM_DETAILS';
 const SET_WORK_ITEM_ID = 'SET_WORK_ITEM_ID';
@@ -158,29 +158,29 @@ export const actionCreators = {
 export const reducer = (state = initialState, action: ProjectInfoActionTypes): CurrentRoundState => {
 	switch (action.type) {
 		case SET_WORK_ITEM_DETAILS:
-			return { ...state, activeWorkItem: action.payload };
+			return {...state, activeWorkItem: action.payload};
 		case SET_WORK_ITEM_ID:
-			return { ...state, activeWorkItemId: action.payload || undefined };
+			return {...state, activeWorkItemId: action.payload || undefined};
 		case SET_ACTIVE_WORK_ITEM_STORY_POINTS:
-			return { ...state, activeWorkItemStoryPoints: action.payload };
+			return {...state, activeWorkItemStoryPoints: action.payload};
 		case SET_ROUND_ID:
-			return { ...state, roundId: action.payload };
+			return {...state, roundId: action.payload};
 		case SET_SELECTED_CARD_ID:
-			return { ...state, selectedCardId: action.payload };
+			return {...state, selectedCardId: action.payload};
 		case SET_FLIPPED_CARDS:
-			return { ...state, flippedCards: action.payload };
+			return {...state, flippedCards: action.payload};
 		case SET_CARDS_WERE_FLIPPED:
-			return { ...state, cardsWereFlipped: action.payload };
+			return {...state, cardsWereFlipped: action.payload};
 		case SET_PLAYED_CARDS:
-			return { ...state, playedCards: action.payload };
+			return {...state, playedCards: action.payload};
 		case INCREASE_CURRENT_HIDDEN_CARDS_COUNT:
-			return { ...state, currentHiddenCardsCount: state.currentHiddenCardsCount + 1 };
+			return {...state, currentHiddenCardsCount: state.currentHiddenCardsCount + 1};
 		case DECREASE_CURRENT_HIDDEN_CARDS_COUNT:
-			return { ...state, currentHiddenCardsCount: Math.max(state.currentHiddenCardsCount - 1, 0) };
+			return {...state, currentHiddenCardsCount: Math.max(state.currentHiddenCardsCount - 1, 0)};
 		case SET_CURRENT_HIDDEN_CARDS_COUNT:
-			return { ...state, currentHiddenCardsCount: action.payload };
+			return {...state, currentHiddenCardsCount: action.payload};
 		case RESET:
-			return { ...initialState };
+			return {...initialState};
 		default:
 			return state;
 	}

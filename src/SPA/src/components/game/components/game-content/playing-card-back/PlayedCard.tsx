@@ -1,8 +1,8 @@
 ﻿import * as React from 'react';
 import './played-card.scss';
-import { Tooltip } from 'azure-devops-ui/TooltipEx';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../store';
+import {Tooltip} from 'azure-devops-ui/TooltipEx';
+import {useSelector} from 'react-redux';
+import {AppState} from '../../../../../store';
 
 interface IProps {
 	isAway: boolean;
@@ -15,11 +15,12 @@ interface IProps {
 }
 
 const PlayedCard = (props: IProps): JSX.Element => {
-	const { id: playerId } = useSelector((state: AppState) => state.playerDetails);
+	const {id: playerId} = useSelector((state: AppState) => state.playerDetails);
+	const {cardsWereFlipped} = useSelector((state: AppState) => state.currentRound);
 
 	return (
 		<div className={'played-card-wrapper noSelect' + (props.isAway ? 'away' : '')}>
-			<div className={'card-wrapper' + (props.content ? ' rotate' : '')}>
+			<div className={'card-wrapper' + (props.content && cardsWereFlipped ? ' rotate' : '')}>
 				{props.isAway && (
 					<svg width="320" height="235" version="1.1" viewBox="0 0 320 235" xmlns="http://www.w3.org/2000/svg">
 						<path
@@ -30,7 +31,7 @@ const PlayedCard = (props: IProps): JSX.Element => {
 						/>
 					</svg>
 				)}
-				<div className="card-front" style={props.color ? { background: props.color } : { background: 'red' }}>
+				<div className="card-front" style={props.color ? {background: props.color} : {}}>
 					<span className="card-content ">{props.content}</span>
 				</div>
 				<div className="card-back"></div>

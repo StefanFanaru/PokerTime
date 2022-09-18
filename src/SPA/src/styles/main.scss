@@ -29,7 +29,7 @@ body {
 
 @include phone {
 	.bolt-tooltip {
-		display: none;
+		display: none !important;
 	}
 }
 
@@ -207,10 +207,6 @@ input {
 	box-shadow: 0 3.2px 7.2px 0 var(--callout-shadow-color), 0 0.6px 1.8px 0 var(--callout-shadow-secondary-color);
 }
 
-.bolt-callout-modal {
-	background-color: rgba(0, 0, 0, 0.3);
-}
-
 .pointer-cursor {
 	cursor: pointer;
 }
@@ -221,7 +217,7 @@ input {
 
 @include phone {
 	.bolt-button.subtle:hover {
-		background-color: inherit;
+		background-color: inherit !important;
 	}
 
 	.bolt-dialog-callout-content {
@@ -229,7 +225,7 @@ input {
 	}
 
 	.bolt-dialog {
-		width: 90vw;
+		width: 90vw !important;
 
 		.bolt-dialog-content {
 			flex-grow: unset !important;

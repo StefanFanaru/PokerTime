@@ -57,22 +57,7 @@
       "addressable": true
     }
   ],
-  "contributions": [
-    {
-      "id": "poker-time-hub",
-      "type": "ms.vss-web.hub",
-      "description": "PokerTime Hub",
-      "targets": [
-        "ms.vss-work-web.work-hub-group"
-      ],
-      "properties": {
-        "name": "PokerTime",
-        "uri": "/",
-        "supportsMobile": true,
-        "iconName": "RadioBtnOn"
-      }
-    }
-  ],
+  "contributions": [],
   "scopes": [
     "vso.work_full",
     "vso.graph",
