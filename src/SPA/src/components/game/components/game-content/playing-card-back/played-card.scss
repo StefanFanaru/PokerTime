@@ -1,0 +1,122 @@
+﻿@import 'src/styles/varibles';
+
+.card-back {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24.5' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%239C92AC' fill-opacity='0.1' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+	linear-gradient(
+					45deg,
+					rgba(108, 61, 61, 1) 0%,
+					rgba(78, 39, 39, 1) 20%,
+					rgba(83, 44, 44, 1) 58%,
+					rgba(70, 35, 35, 1) 79%,
+					rgba(48, 25, 25, 1) 100%
+	);
+}
+
+.light-theme {
+	.card-back {
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='24.5' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%239C92AC' fill-opacity='0.2' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+		linear-gradient(
+						45deg,
+						rgb(150, 87, 87) 0%,
+						rgb(117, 60, 60) 20%,
+						rgb(138, 71, 71) 58%,
+						rgb(117, 60, 60) 79%,
+						rgb(75, 39, 39) 100%
+		);
+	}
+
+	.card-front {
+		filter: brightness(1.5);
+	}
+}
+
+.played-card-wrapper {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+
+	.card-wrapper {
+		position: relative;
+		width: $gameCardWidth;
+		height: $gameCardHeight;
+		max-height: 115px;
+		max-width: 75px;
+		transform-style: preserve-3d;
+		border-radius: 10px;
+
+		@include phone {
+			width: 7.1vh;
+			height: 10.1vh;
+			max-height: unset;
+			max-width: unset;
+		}
+	}
+
+	.rotate {
+		transition: transform 1s;
+		transform: rotateY(180deg);
+	}
+
+	&.away {
+		background: #4b4b4b;
+	}
+
+	svg {
+		height: 30%;
+		opacity: 0.5;
+	}
+
+	img {
+		border-radius: 50%;
+		width: 30px;
+		height: 30px;
+		display: flex;
+		justify-content: center;
+		color: #fff;
+		object-fit: cover;
+		background-color: initial;
+		user-select: none;
+		vertical-align: middle;
+		border-style: none;
+		box-sizing: border-box;
+		cursor: default;
+	}
+
+	.is-current-player {
+		box-shadow: 0 0 6px 1px #00b8ff;
+	}
+
+	.card-content {
+		color: white;
+		font-size: 30px;
+		margin-bottom: 4px;
+		margin-right: 1px;
+		text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+
+		@include tablet {
+			font-size: 25px;
+		}
+
+		@include phone {
+			font-size: 3.5vh;
+		}
+	}
+
+	.card-front,
+	.card-back {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		backface-visibility: hidden;
+		border-radius: 10px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.card-front {
+		transform: rotateY(180deg);
+	}
+}

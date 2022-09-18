@@ -1,0 +1,250 @@
+﻿@import 'src/styles/varibles';
+@import 'src/styles/mixins';
+@import 'node_modules/azure-devops-ui/Core/_platformCommon.scss';
+
+.right-menu-wrapper {
+	background: $grey-1;
+	position: relative;
+	flex-shrink: 0;
+	animation-name: expand;
+	width: $navExpandedWidth;
+
+	.top {
+		display: flex;
+		justify-content: space-between;
+		padding: 0 12px 0 20px;
+		height: 45px;
+		align-items: center;
+
+		.title {
+			font-size: 16px;
+			width: 54%;
+			display: flex;
+			align-items: center;
+			cursor: default;
+		}
+
+		@include phone {
+			height: 50px;
+			padding-left: 120px;
+			padding-top: 20px;
+			padding-bottom: 20px;
+			align-items: flex-start;
+
+			.title {
+				width: 56%;
+				margin-left: 45%;
+				justify-content: center;
+				align-items: center;
+				height: 100%;
+			}
+		}
+	}
+
+	@include phone {
+		animation-name: expandMobile;
+		width: 100vw;
+	}
+
+	@include tablet {
+		position: absolute;
+		z-index: 3;
+		top: 0;
+		right: 0;
+		box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.3);
+	}
+
+	&.retracted {
+		width: $navRetractedWidth;
+		animation-name: retract;
+
+		.right-menu-items-wrapper {
+			height: calc(100% - 46px);
+
+			.body {
+				max-height: calc(100% - 45px);
+			}
+		}
+
+		.separator {
+			width: 100%;
+			margin: 0;
+
+			@include phone {
+				display: none;
+			}
+		}
+
+		.row {
+			padding: 10px 0;
+			text-align: center;
+
+			@include phone {
+				&.active {
+					padding: 20px 0;
+				}
+			}
+		}
+
+		.col1 {
+			width: 100%;
+			margin-right: 0;
+		}
+
+		.col2 {
+			display: none;
+		}
+
+		.col3 {
+			display: none;
+		}
+
+		.top {
+			padding: 0;
+			justify-content: center;
+
+			.title {
+				display: none;
+			}
+
+			.right-menu-top-buttons-wrapper {
+				position: relative;
+				right: 0;
+
+				> :not(.expand-button) {
+					display: none;
+				}
+			}
+		}
+
+		.ps__thumb-x,
+		.ps__thumb-y {
+			width: 4px;
+		}
+
+		.ps__rail-y:hover > .ps__thumb-y,
+		.ps__rail-y:focus > .ps__thumb-y,
+		.ps__rail-y.ps--clicking .ps__thumb-y {
+			width: 7px;
+		}
+
+		@include phone {
+			animation-name: retractMobile;
+			height: 50px;
+
+			.right-menu-items-wrapper {
+				display: none;
+			}
+
+			.expand-button {
+				width: 50px;
+			}
+		}
+
+		@include tablet {
+			box-shadow: none;
+		}
+	}
+
+	.separator {
+		margin: 0 20px;
+
+		@include phone {
+			margin: 0;
+		}
+	}
+
+	.admin-buttons {
+		display: flex;
+		position: absolute;
+		bottom: 0;
+		height: 76px;
+		width: 100%;
+		background: $grey-2;
+
+		@include phone {
+			height: 10vh;
+		}
+	}
+
+	.game-points-card-wrapper {
+		display: flex;
+		position: absolute;
+		bottom: 76px;
+		width: 100%;
+		height: 55px;
+
+		@include phone {
+			height: 8vh;
+			bottom: 10vh;
+		}
+	}
+}
+
+@keyframes rotate-left {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(180deg);
+	}
+}
+
+@keyframes rotate-right {
+	from {
+		transform: rotate(180deg);
+	}
+
+	to {
+		transform: rotate(0deg);
+	}
+}
+
+@keyframes expand {
+	from {
+		width: $navRetractedWidth;
+	}
+
+	to {
+		width: $navExpandedWidth;
+	}
+}
+
+@keyframes retract {
+	from {
+		width: $navExpandedWidth;
+	}
+
+	to {
+		width: $navRetractedWidth;
+	}
+}
+
+@keyframes expandMobile {
+	from {
+		width: $navRetractedWidth;
+	}
+
+	to {
+		width: 100vw;
+	}
+}
+
+@keyframes retractMobile {
+	from {
+		width: 100vw;
+	}
+
+	to {
+		width: $navRetractedWidth;
+	}
+}
+
+.spinner-items {
+	position: absolute;
+	// center absolute
+	top: 57px;
+	left: 50%;
+	transform: translate(-50%, 0);
+}

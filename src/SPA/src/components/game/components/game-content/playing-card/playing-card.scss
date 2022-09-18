@@ -1,0 +1,114 @@
+﻿@import 'src/styles/varibles';
+@import 'src/styles/mixins';
+
+.light-theme {
+	.playing-card-wrapper {
+		filter: brightness(1.5);
+
+		&:hover {
+			filter: brightness(1.7);
+		}
+
+		&.disabled:hover {
+			filter: brightness(1.5);
+		}
+
+		&.active {
+			filter: brightness(1.7);
+
+			@include phone {
+				filter: brightness(1.7);
+			}
+		}
+	}
+}
+
+.dark-theme {
+	.playing-card-wrapper {
+		filter: brightness(1);
+
+		&:hover {
+			filter: brightness(1.2);
+		}
+
+		&.disabled:hover {
+			filter: brightness(1);
+		}
+
+		&.active {
+			filter: brightness(1.2);
+
+			@include phone {
+				filter: brightness(1.5);
+			}
+		}
+	}
+}
+
+.playing-card-wrapper {
+	width: $gameCardWidth;
+	height: $gameCardHeight;
+	max-height: 115px;
+	max-width: 75px;
+	min-width: 3.6vw;
+	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	-moz-transform: translateY(0);
+	-ms-transform: translateY(0);
+	-webkit-transform: translateY(0);
+	transform: translateY(0);
+	will-change: transform;
+	transition: transform 0.2s ease-in-out;
+	cursor: pointer;
+
+	.helper {
+		position: absolute;
+		border: 1px solid red;
+		height: 1px;
+		width: 1px;
+	}
+
+	.card-content {
+		color: white;
+		font-size: 30px;
+		margin-bottom: 4px;
+		margin-right: 1px;
+		text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+
+		@include tablet {
+			font-size: 25px;
+		}
+
+		@include phone {
+			font-size: 3.5vh;
+		}
+	}
+
+	&.disabled {
+		cursor: default;
+	}
+
+	&.active {
+		-moz-transform: translateY(-2vw);
+		-ms-transform: translateY(-2vw);
+		-webkit-transform: translateY(-2vw);
+		transform: translateY(-2vw);
+
+		@include phone {
+			-moz-transform: translateY(-3vh);
+			-ms-transform: translateY(-3vh);
+			-webkit-transform: translateY(-3vh);
+			transform: translateY(-3vh);
+		}
+	}
+
+	@include phone {
+		width: 7.1vh;
+		height: 10.1vh;
+		max-height: unset;
+		max-width: unset;
+		flex-shrink: 0;
+	}
+}

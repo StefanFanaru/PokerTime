@@ -1,0 +1,79 @@
+﻿@import 'src/styles/varibles';
+
+.dark-theme {
+	.game-info-cards-wrapper {
+		.red {
+			color: indianred !important;
+		}
+	}
+}
+
+.game-info-cards-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+
+	.card {
+		width: 130px;
+		height: 50px;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+
+		.value {
+			font-weight: bold;
+
+			&.green {
+				color: $status-success-text;
+			}
+
+			&.orange {
+				color: coral;
+			}
+
+			&.red {
+				color: var(--bug-red);
+			}
+		}
+	}
+
+	.active-players {
+		cursor: pointer;
+		position: relative;
+
+		&:hover {
+			background: $grey-2;
+
+			.triangle {
+				border-top: 5px solid $grey-1;
+			}
+		}
+	}
+
+	.active-players-hover {
+		width: 130px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		justify-content: center;
+
+		img {
+			border-radius: 50%;
+			width: 30px;
+			height: 30px;
+			display: flex;
+			justify-content: center;
+			color: #fff;
+			object-fit: cover;
+			background-color: initial;
+			user-select: none;
+			vertical-align: middle;
+			border-style: none;
+			box-sizing: border-box;
+		}
+
+		.has-played-card {
+			box-shadow: 0 0 6px 2px #57a859;
+		}
+	}
+}

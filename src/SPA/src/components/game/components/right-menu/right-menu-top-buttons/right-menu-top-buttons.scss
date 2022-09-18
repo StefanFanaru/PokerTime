@@ -1,0 +1,42 @@
+﻿@import 'src/styles/mixins';
+@import 'src/styles/varibles';
+
+.right-menu-top-buttons-wrapper {
+	position: absolute;
+	right: 13px;
+	min-width: 32%;
+
+	.close-icon {
+		color: var(--bug-red);
+	}
+
+	@include phone {
+		left: 0;
+		top: 0;
+		right: unset;
+		display: flex;
+		//padding-bottom: 20px;
+
+		button:not(.expand-button) {
+			.fabric-icon {
+				font-size: 18px;
+				margin-right: 10px;
+			}
+		}
+
+		.expand-button {
+			width: 50px;
+			height: 50px;
+			background: $grey-2;
+			margin-right: 10px;
+
+			&:active {
+				background: $grey-2;
+			}
+
+			&:hover {
+				background: $grey-2 !important;
+			}
+		}
+	}
+}

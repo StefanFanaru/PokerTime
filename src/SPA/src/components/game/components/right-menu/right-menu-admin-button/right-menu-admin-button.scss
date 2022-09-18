@@ -1,0 +1,71 @@
+﻿@import 'src/styles/mixins';
+@import 'src/styles/varibles';
+
+.light-theme {
+	.right-menu-admin-button-wrapper {
+		background: $grey-4;
+
+		&:hover {
+			background: $grey-5;
+
+			@include phone {
+				background: $grey-4;
+			}
+		}
+	}
+}
+
+.right-menu-admin-button-wrapper {
+	width: 20%;
+	background: $grey-3;
+	height: 100%;
+	margin-right: 5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+
+	.fa-repeat {
+		opacity: 1;
+		color: var(--story-blue);
+	}
+
+	&.disabled {
+		color: $neutral-alpha-30;
+
+		.fa-repeat {
+			color: $neutral-alpha-30;
+		}
+	}
+
+	&:last-child {
+		margin-right: 0;
+	}
+
+	&:hover {
+		background: $grey-4;
+
+		@include phone {
+			background: $grey-3;
+		}
+	}
+
+	&:active {
+		background: $grey-5;
+	}
+
+	.fabric-icon {
+		font-size: 22px;
+		margin-bottom: 7px;
+		opacity: 0.85;
+
+		@include phone {
+			height: 3vh;
+		}
+	}
+
+	span {
+		opacity: 0.9;
+	}
+}

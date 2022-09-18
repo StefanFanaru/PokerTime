@@ -1,0 +1,89 @@
+{
+  "manifestVersion": 1,
+  "version": "0.0.0",
+  "name": "PokerTime",
+  "description": "Sprint planning extension",
+  "publisher": "StefanFanaru",
+  "publisherId": "StefanFanaru",
+  "demands": [
+    "api-version/3.0"
+  ],
+  "categories": [
+    "Azure Boards"
+  ],
+  "tags": [
+    "poker",
+    "scrum",
+    "planning",
+    "agile",
+    "voting",
+    "estimation",
+    "time",
+    "cards",
+    "sprint",
+    "points"
+  ],
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/StefanFanaru/PokerTime"
+  },
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services.Cloud"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "README.MARKET.md"
+    }
+  },
+  "links": {
+    "repository": {
+      "uri": "https://github.com/StefanFanaru/PokerTime"
+    },
+    "issues": {
+      "uri": "https://github.com/StefanFanaru/PokerTime/issues"
+    },
+    "learn": {
+      "uri": "https://github.com/StefanFanaru/PokerTime/wiki"
+    }
+  },
+  "icons": {
+    "default": "src/assets/images/poker-chip.png"
+  },
+  "files": [
+    {
+      "path": "dist",
+      "addressable": true
+    }
+  ],
+  "contributions": [
+    {
+      "id": "poker-time-hub",
+      "type": "ms.vss-web.hub",
+      "description": "PokerTime Hub",
+      "targets": [
+        "ms.vss-work-web.work-hub-group"
+      ],
+      "properties": {
+        "name": "PokerTime",
+        "uri": "/",
+        "supportsMobile": true,
+        "iconName": "RadioBtnOn"
+      }
+    }
+  ],
+  "scopes": [
+    "vso.work_full",
+    "vso.graph",
+    "vso.identity",
+    "vso.project",
+    "vso.profile",
+    "vso.settings"
+  ],
+  "branding": {
+    "color": "rgb(34, 34, 34)",
+    "theme": "dark"
+  },
+  "id": ""
+}

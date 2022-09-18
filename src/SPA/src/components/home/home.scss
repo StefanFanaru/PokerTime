@@ -1,0 +1,23 @@
+.home-wrapper {
+	.content {
+		height: 100%;
+		width: 100%;
+		object-fit: scale-down;
+	}
+
+	.games-lists {
+		margin-top: 2rem;
+
+		.games-list-wrapper:last-child {
+			margin-top: 2rem;
+		}
+	}
+}
+
+.new-game-panel {
+	display: flex;
+	flex-grow: 1;
+	width: 100%;
+	flex-direction: column;
+	padding-top: 2px;
+}

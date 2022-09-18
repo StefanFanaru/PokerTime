@@ -1,0 +1,138 @@
+﻿@import 'src/styles/varibles';
+@import 'src/styles/mixins';
+
+.game-work-item-wrapper {
+	margin-right: 1rem;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	@include phone {
+		margin-right: 0;
+	}
+
+	.top {
+		display: flex;
+		gap: 1rem;
+		align-items: flex-start;
+
+		.icon {
+			width: 49px;
+
+			svg {
+				height: 43px;
+				margin-top: 2px;
+			}
+
+			@include phone {
+				width: 25px;
+
+				svg {
+					height: 25px;
+					margin-top: 5px;
+				}
+			}
+		}
+
+		.fa-bug {
+			color: var(--bug-red);
+		}
+
+		.fa-book-open {
+			color: var(--story-blue);
+		}
+
+		.details {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			gap: 0.2rem;
+			height: 100%;
+
+			.title {
+				font-size: 16px;
+				font-weight: bold;
+				align-items: center;
+				max-width: calc(900px - 1rem - 49px);
+
+				@include phone {
+					font-size: 1rem !important;
+					max-width: calc(100vw - 25px - 100px);
+				}
+			}
+
+			.tags {
+				display: flex;
+				gap: 0.5rem;
+
+				div {
+					opacity: 0.8;
+					background: $grey-1;
+					border-radius: 4px;
+					padding: 0.1rem 0.3rem;
+					font-size: 0.75rem;
+				}
+			}
+		}
+	}
+
+	.description {
+		width: 100%;
+		margin-top: 1rem;
+		padding: 1.3rem 1.5rem;
+		text-align: justify;
+		max-width: 900px;
+		max-height: calc(100% - 45px - 1rem);
+		height: fit-content;
+
+		img {
+			height: 150px;
+			border-radius: 4px;
+			transition: filter 0.2s ease-in-out;
+			cursor: zoom-in;
+
+			&:hover {
+				filter: brightness(1.2);
+			}
+		}
+
+		.full-image {
+			height: 100vh;
+			position: absolute;
+		}
+
+		a {
+			color: $communication-shade-10;
+		}
+	}
+
+	.true-mobile & {
+		.top {
+			margin-right: 50px;
+		}
+	}
+
+	.no-description {
+		color: $neutral-alpha-60;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 0.8rem;
+		width: 100%;
+		font-size: 16px;
+		padding: 3rem 0;
+
+		.fabric-icon {
+			font-size: 43px;
+		}
+
+		@include phone {
+			font-size: 21px;
+		}
+	}
+}
+
+#app-spinner {
+	display: none !important;
+}

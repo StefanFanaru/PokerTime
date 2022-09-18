@@ -1,0 +1,25 @@
+﻿@import 'src/styles/varibles';
+@import 'src/styles/mixins';
+
+.card-deck-wrapper {
+	display: flex;
+	gap: 1rem;
+	max-width: calc(100vw - 2rem - 400px);
+	overflow: auto;
+	width: unset;
+	align-items: flex-end;
+	height: calc(#{$gameCardHeight} + 2vw + 1.5vh) !important;
+	padding-bottom: 1.5vh;
+
+	@include tablet {
+		max-width: calc(100vw - 2rem - 50px);
+	}
+
+	@include phone {
+		width: unset;
+		align-items: flex-end;
+		max-width: calc(100vw - 2rem);
+		height: calc(10.1vh + 4.5vh) !important;
+		padding-bottom: 1.5vh;
+	}
+}

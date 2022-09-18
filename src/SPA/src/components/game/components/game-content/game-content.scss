@@ -1,0 +1,107 @@
+﻿@import 'src/styles/varibles';
+@import 'src/styles/mixins';
+
+.game-content-wrapper {
+	justify-content: space-between;
+	flex-direction: column;
+	display: flex;
+	height: 100%;
+	padding: 1rem 1rem 0;
+	position: relative;
+
+	.top-wrapper {
+		display: flex;
+		justify-content: space-between;
+		height: calc(100% - #{$gameCardHeight} * 2 - 30px - 2vh - 2vw - 2rem);
+
+		@include tablet {
+			width: calc(100% - #{$navRetractedWidth});
+		}
+
+		@include phone {
+			width: calc(100vw - 2rem);
+			height: calc(100% - 10.1vh * 2 - 30px - 4vh - 2vw - 2rem);
+		}
+	}
+
+	.left {
+		flex-grow: 1;
+	}
+
+	.right {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+
+		@include phone {
+			display: none;
+		}
+	}
+
+	.game-content-paused {
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.7);
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 2;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		font-size: 1.5rem;
+		color: #c7c7c7;
+		font-weight: bold;
+
+		.ms-Icon--CirclePause {
+			font-size: 4rem;
+			font-weight: bold;
+			margin-bottom: 1rem;
+		}
+	}
+}
+
+@include tablet {
+	.game-content-wrapper {
+		.game-content-paused {
+			width: calc(100vw - #{$navExpandedWidth});
+		}
+	}
+
+	.retracted ~ .game-content-wrapper {
+		.game-content-paused {
+			width: calc(100vw - #{$navRetractedWidth});
+		}
+	}
+}
+
+@include phone {
+	.game-content-wrapper {
+		.game-content-paused {
+			width: 0;
+			display: none;
+		}
+	}
+
+	.retracted ~ .game-content-wrapper {
+		.game-content-paused {
+			width: 100vw;
+			display: flex;
+		}
+	}
+}
+
+@include exceptPhone {
+	.retracted ~ .game-content-wrapper {
+		.card-deck-wrapper {
+			transition: max-width 0.3s linear;
+			max-width: calc(100vw - 2rem - 50px);
+		}
+
+		.played-cards-wrapper {
+			transition: max-width 0.3s linear;
+			max-width: calc(100vw - 2rem - 50px);
+		}
+	}
+}

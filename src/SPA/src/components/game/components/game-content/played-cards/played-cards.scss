@@ -1,0 +1,22 @@
+﻿@import 'src/styles/mixins';
+
+.played-cards-wrapper {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1rem;
+	width: unset;
+	height: auto !important;
+	padding-bottom: 1vh;
+	max-width: calc(100vw - 2rem - 400px);
+
+	@include tablet {
+		max-width: calc(100vw - 2rem - 50px);
+	}
+
+	@include phone {
+		max-width: calc(100vw - 2rem);
+		overflow: auto;
+		padding-bottom: 1.5vh;
+		margin-top: 0;
+	}
+}

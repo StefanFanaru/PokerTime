@@ -1,0 +1,36 @@
+﻿@import 'src/styles/varibles';
+@import 'src/styles/mixins';
+
+.games-list-wrapper {
+	padding: 0 2rem 2rem;
+
+	.list {
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-column-gap: 2rem;
+		grid-row-gap: 2rem;
+
+		@include laptop {
+			grid-template-columns: repeat(4, 1fr);
+		}
+
+		@include largeTablet {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		@include tablet {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		@include phone {
+			grid-template-columns: repeat(1, 1fr);
+		}
+	}
+
+	.title {
+		font-size: 2rem;
+		font-weight: bold;
+		margin-bottom: 2rem;
+	}
+}

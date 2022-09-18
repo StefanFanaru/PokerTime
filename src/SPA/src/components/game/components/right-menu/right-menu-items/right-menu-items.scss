@@ -1,0 +1,132 @@
+﻿@import 'src/styles/mixins';
+@import 'src/styles/varibles';
+
+.right-menu-items-wrapper {
+	width: 100%;
+	height: calc(100% - 76px - 55px - 45px);
+
+	@include phone {
+		height: calc(100% - 10vh - 8vh - 55px);
+	}
+
+	&.full {
+		height: 100%;
+	}
+
+	.row {
+		display: flex;
+		width: 100%;
+		padding: 10px 20px 10px 0;
+
+		&.active {
+			font-weight: bold;
+			box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.1);
+			background: $grey-2;
+			cursor: default;
+		}
+
+		&:not(.active) {
+			cursor: pointer;
+
+			:hover {
+				opacity: 0.9;
+			}
+		}
+
+		@include phone {
+			padding: 15px 20px 15px 0;
+		}
+	}
+
+	.header {
+		font-weight: bold;
+		display: flex;
+		justify-content: space-between;
+		height: 45px;
+		align-items: center;
+
+		.row {
+			margin-bottom: 0;
+			cursor: default !important;
+
+			:hover {
+				opacity: 1 !important;
+			}
+		}
+	}
+
+	.body {
+		position: relative;
+		max-height: calc(100% - 45px);
+
+		.row:first-of-type {
+			padding-top: 0;
+
+			&.active {
+				padding-top: 10px;
+			}
+		}
+
+		&.paused {
+			pointer-events: none;
+
+			.row {
+				opacity: 0.5;
+			}
+		}
+
+		//@include phone() {
+		//	max-height: calc(100% - 100px);
+		//}
+	}
+
+	.col1 {
+		width: 12%;
+		margin-right: 1%;
+		display: flex;
+		justify-content: center;
+	}
+
+	.col2 {
+		width: 77%;
+		display: flex;
+		align-items: center;
+	}
+
+	span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	svg {
+		height: 14px;
+		margin-right: 7px;
+	}
+
+	.fa-bug {
+		color: var(--bug-red);
+	}
+
+	.fa-book-open {
+		color: var(--story-blue);
+		margin-bottom: 1px;
+	}
+
+	.fa-eye {
+		margin-left: 10px;
+		color: $neutral-alpha-30;
+		margin-right: 0;
+	}
+
+	@include phone {
+		svg {
+			height: 15px;
+			margin-right: 12px;
+		}
+	}
+}
+
+.col3 {
+	width: 12%;
+	text-align: center;
+}

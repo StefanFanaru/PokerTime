@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "LF",
+    "outDir": "dist/",
+    "target": "es6",
+    "sourceMap": true,
+    "baseUrl": "src",
+    "declaration": true,
+    "jsx": "react",
+    "allowJs": true,
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "types": [
+      "react",
+      "node"
+    ]
+  },
+  "exclude": [
+    ".git",
+    "node_modules",
+    "typings",
+    "dist"
+  ]
+}

@@ -1,0 +1,14 @@
+node_modules/
+typings/
+dist/
+out/
+
+# macOS
+.DS_Store
+
+# cypress
+cypress/videos
+cypress/screenshots
+.nyc_output
+notes.txt
+.idea

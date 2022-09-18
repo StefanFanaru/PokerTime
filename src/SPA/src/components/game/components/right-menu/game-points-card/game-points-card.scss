@@ -1,0 +1,66 @@
+﻿@import 'src/styles/varibles';
+
+.light-theme {
+	.game-points-card-wrapper {
+		border-top: 1px solid $grey-4;
+	}
+}
+
+.game-points-card-wrapper {
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	float: right;
+	background: $grey-2;
+	border-top: 1px solid $grey-3;
+
+	.left {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: calc(100% - 31px - 30px);
+
+		.top-points {
+			display: flex;
+			align-items: flex-end;
+			gap: 0.3rem;
+			width: 162px;
+			justify-content: center;
+			margin-bottom: 2px;
+
+			.points {
+				font-weight: bold;
+			}
+		}
+
+		.flex-column {
+			width: 156px;
+		}
+
+		input {
+			width: 156px;
+		}
+
+		@include phone {
+			.top-points {
+				width: 62%;
+			}
+
+			.flex-column {
+				width: calc(30vw + 2px);
+			}
+
+			input {
+				width: 30vw;
+				font-size: 2.5vh;
+				padding: 2.5vh 1vh;
+			}
+		}
+	}
+
+	.right > button {
+		height: 31px;
+		width: 31px;
+		margin: 0 17px;
+	}
+}

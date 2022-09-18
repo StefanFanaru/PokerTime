@@ -1,0 +1,13 @@
+﻿@import 'src/styles/mixins';
+
+.loading-screen-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 46%;
+	width: 100vw;
+
+	@include phone {
+		height: 100%;
+	}
+}
