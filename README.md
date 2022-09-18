@@ -4,9 +4,6 @@ Are you tired of having to manually update your Azure DevOps work items with the
 Do you want to have a clear history of the votes each team member has cast for each work item?<br>
 Enter PokerTime for Azure DevOps!
 
-This extension is not a finished product but it's functional. It's code is available
-on [GitHub](https://github.com/StefanFanaru/PokerTime).
-
 ![alt text](https://generalacc.blob.core.windows.net/cdn/2022-09-17%2018_29_11-PokerTime%20-%20Boards.png)
 
 ## Features
@@ -28,7 +25,4 @@ on [GitHub](https://github.com/StefanFanaru/PokerTime).
 - Each game is secured and can be accessed only by users that are members of the same Azure DevOps project the game was created in
 
 More others, and more to come...
-
-Logo: <a href="https://www.flaticon.com/free-icons/poker-chip" title="poker chip icons">Poker chip icons created by Smashicons -
-Flaticon</a>
 
