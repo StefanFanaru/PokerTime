@@ -20,11 +20,11 @@ public class WorkItemSelectedEventHandler : IClientEventHandler<WorkItemSelected
         _repository = repository;
     }
 
-    public async Task Handle(WorkItemSelectedEvent payload)
+    public async Task Handle(string playerId, WorkItemSelectedEvent payload)
     {
         var affected = await _repository.Query<Game>()
             .Where(x => x.Id == payload.GameId)
-            .Where(x => x.Status != GameStatus.Ended)
+            .Where(x => x.Status != GameStatus.Ended && x.OwnerId == playerId)
             .UpdateFromQueryAsync(x => new Game
             {
                 ActiveWorkItemId = payload.WorkItemId

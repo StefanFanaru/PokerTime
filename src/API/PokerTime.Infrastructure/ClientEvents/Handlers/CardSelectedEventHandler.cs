@@ -21,7 +21,7 @@ public class CardSelectedEventHandler : IClientEventHandler<CardSelectedEvent>
         _repository = repository;
     }
 
-    public async Task Handle(CardSelectedEvent payload)
+    public async Task Handle(string playerId, CardSelectedEvent payload)
     {
         var isGameEnded = await _repository.Query<GameRound>()
             .Where(x => x.Id == payload.RoundId)
@@ -38,10 +38,10 @@ public class CardSelectedEventHandler : IClientEventHandler<CardSelectedEvent>
         await _repository.ExecuteTransactionalAsync(async _ =>
         {
             await _repository.Query<PlayedCard>()
-                .Where(x => x.RoundId == payload.RoundId && x.PlayerId == payload.PlayerId)
+                .Where(x => x.RoundId == payload.RoundId && x.PlayerId == playerId)
                 .DeleteFromQueryAsync();
 
-            _repository.Insert(new PlayedCard(payload.PlayingCardId, payload.PlayerId, payload.RoundId));
+            _repository.Insert(new PlayedCard(payload.PlayingCardId, playerId, payload.RoundId));
             await _repository.SaveAsync();
 
             cardsWereFlipped = await _repository.Query<GameRound>().Where(x => x.Id == payload.RoundId)
@@ -53,15 +53,16 @@ public class CardSelectedEventHandler : IClientEventHandler<CardSelectedEvent>
             payload.Color = playedCard.Color;
         });
 
+        payload.PlayerId = playerId;
         await _clientEventSender.SendToAllInRound(cardsWereFlipped
             ? payload
             : new CardSelectedEvent
             {
                 RoundId = payload.RoundId,
-                PlayerId = payload.PlayerId,
+                PlayerId = playerId,
                 GameId = payload.GameId
             }, payload.RoundId);
 
-        await _clientEventSender.SendToUserAsync(payload, payload.PlayerId, payload.GameId);
+        await _clientEventSender.SendToUserAsync(payload, playerId, payload.GameId);
     }
 }

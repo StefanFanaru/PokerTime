@@ -4,6 +4,6 @@ namespace PokerTime.Core.Abstractions
 {
     public interface IClientEventHandler<T>
     {
-        Task Handle(T payload);
+        Task Handle(string playerId, T payload);
     }
 }

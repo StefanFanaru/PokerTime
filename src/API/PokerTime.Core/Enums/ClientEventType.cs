@@ -11,6 +11,7 @@
         PlayerDisconnected,
         PlayerConnected,
         WorkItemSelected,
-        CardsWereFlipped
+        CardsWereFlipped,
+        ShouldRefreshGame
     }
 }

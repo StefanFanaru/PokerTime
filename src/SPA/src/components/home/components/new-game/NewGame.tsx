@@ -1,19 +1,19 @@
-﻿import { TextField } from 'azure-devops-ui/TextField';
-import { Dropdown } from 'azure-devops-ui/Dropdown';
-import { Panel } from 'azure-devops-ui/Panel';
+﻿import {TextField} from 'azure-devops-ui/TextField';
+import {Dropdown} from 'azure-devops-ui/Dropdown';
+import {Panel} from 'azure-devops-ui/Panel';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { CoreRestClient, WebApiTeam } from 'azure-devops-extension-api/Core';
-import { IListSelection } from 'azure-devops-ui/List';
-import { TeamSettingsIteration, WorkRestClient } from 'azure-devops-extension-api/Work';
-import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../../store';
-import { IListBoxItem } from 'azure-devops-ui/ListBox';
-import { getClient } from 'azure-devops-extension-api';
+import {useEffect, useState} from 'react';
+import {CoreRestClient, WebApiTeam} from 'azure-devops-extension-api/Core';
+import {IListSelection} from 'azure-devops-ui/List';
+import {TeamSettingsIteration, WorkRestClient} from 'azure-devops-extension-api/Work';
+import {DropdownSelection} from 'azure-devops-ui/Utilities/DropdownSelection';
+import {useSelector} from 'react-redux';
+import {AppState} from '../../../../store';
+import {IListBoxItem} from 'azure-devops-ui/ListBox';
+import {getClient} from 'azure-devops-extension-api';
 import useAxios from 'axios-hooks';
-import { IGamePanelItem } from '../../../../types/game-panel-item';
-import { FormItem } from 'azure-devops-ui/FormItem';
+import {IGamePanelItem} from '../../../../types/game-panel-item';
+import {FormItem} from 'azure-devops-ui/FormItem';
 import WarningDialog from '../../../dialogs/warning-dialog/WarningDialog';
 
 interface State {
@@ -44,21 +44,21 @@ const NewGame = (props: Props): JSX.Element => {
 		iterationSelection: new DropdownSelection()
 	});
 
-	const { details: projectDetails } = useSelector((state: AppState) => state.projectInfo);
-	const [{ data: dataGameInsert }, postGameInsert] = useAxios<{ gameId: string }>(
+	const {details: projectDetails} = useSelector((state: AppState) => state.projectInfo);
+	const [{data: dataGameInsert}, postGameInsert] = useAxios<{gameId: string}>(
 		{
 			method: 'POST',
 			url: '/api/game'
 		},
-		{ manual: true }
+		{manual: true}
 	);
 
-	const [{ response: updateResponse }, postGameUpdate] = useAxios<{ gameId: string }>(
+	const [{response: updateResponse}, postGameUpdate] = useAxios<{gameId: string}>(
 		{
 			method: 'PATCH',
 			url: '/api/game'
 		},
-		{ manual: true }
+		{manual: true}
 	);
 
 	// POST game insert
@@ -78,12 +78,12 @@ const NewGame = (props: Props): JSX.Element => {
 	}, [updateResponse]);
 
 	function onGameTitleChange(newValue: string) {
-		setState(prevState => ({ ...prevState, gameTitle: newValue }));
+		setState(prevState => ({...prevState, gameTitle: newValue}));
 	}
 
 	function onIterationSelect(item: IListBoxItem) {
 		if (props.gameUnderEdit && props.gameUnderEdit.selectedIterationId !== item.id) {
-			setState(prevState => ({ ...prevState, isIterationWarningVisible: true, pendingSelectionIterationId: item.id }));
+			setState(prevState => ({...prevState, isIterationWarningVisible: true, pendingSelectionIterationId: item.id}));
 			return;
 		}
 
@@ -95,10 +95,10 @@ const NewGame = (props: Props): JSX.Element => {
 
 	function onTeamSelect(item: IListBoxItem) {
 		if (props.gameUnderEdit && props.gameUnderEdit.selectedTeamId !== item.id) {
-			setState(prevState => ({ ...prevState, isTeamWarningVisible: true, pendingSelectionTeamId: item.id }));
+			setState(prevState => ({...prevState, isTeamWarningVisible: true, pendingSelectionTeamId: item.id}));
 			return;
 		}
-		setState(prevState => ({ ...prevState, selectedTeam: state.teams?.find(x => x.id == item.id) }));
+		setState(prevState => ({...prevState, selectedTeam: state.teams?.find(x => x.id == item.id)}));
 	}
 
 	useEffect(() => {
@@ -108,7 +108,7 @@ const NewGame = (props: Props): JSX.Element => {
 		getClient(CoreRestClient)
 			.getTeams(projectDetails.id, true)
 			.then(teams => {
-				setState(prevState => ({ ...prevState, teams }));
+				setState(prevState => ({...prevState, teams}));
 			});
 	}, [projectDetails]);
 
@@ -122,14 +122,14 @@ const NewGame = (props: Props): JSX.Element => {
 				state.teamsSelection.select(0);
 			}
 
-			setState(prevState => ({ ...prevState, selectedTeam: state.teams![0] }));
+			setState(prevState => ({...prevState, selectedTeam: state.teams![0]}));
 			return;
 		}
 
 		if (props.gameUnderEdit) {
-			let selectedTeamIndex = state.teams?.findIndex(x => x.id == props.gameUnderEdit!.selectedTeamId)!;
+			const selectedTeamIndex = state.teams?.findIndex(x => x.id == props.gameUnderEdit!.selectedTeamId)!;
 			state.teamsSelection.select(selectedTeamIndex);
-			setState(prevState => ({ ...prevState, selectedTeam: state.teams![selectedTeamIndex] }));
+			setState(prevState => ({...prevState, selectedTeam: state.teams![selectedTeamIndex]}));
 		}
 	}, [state.teams]);
 
@@ -151,18 +151,18 @@ const NewGame = (props: Props): JSX.Element => {
 				teamId: state.selectedTeam.id
 			})
 			.then(iterations => {
-				setState(prevState => ({ ...prevState, iterations: iterations }));
+				setState(prevState => ({...prevState, iterations: iterations}));
 
 				if (iterations.length == 1) {
 					state.iterationSelection.select(0);
-					setState(prevState => ({ ...prevState, selectedIteration: iterations[0] }));
+					setState(prevState => ({...prevState, selectedIteration: iterations[0]}));
 
 					return;
 				}
 
 				if (props.gameUnderEdit) {
 					const selectedIterationIndex = iterations.findIndex(x => x.id == props.gameUnderEdit!.selectedIterationId);
-					setState(prevState => ({ ...prevState, selectedIteration: iterations[selectedIterationIndex] }));
+					setState(prevState => ({...prevState, selectedIteration: iterations[selectedIterationIndex]}));
 					state.iterationSelection.select(selectedIterationIndex);
 
 					return;
@@ -174,7 +174,7 @@ const NewGame = (props: Props): JSX.Element => {
 
 	useEffect(() => {
 		if (props.gameUnderEdit) {
-			setState(prevState => ({ ...prevState, gameTitle: props.gameUnderEdit!.title, velocity: props.gameUnderEdit!.velocity }));
+			setState(prevState => ({...prevState, gameTitle: props.gameUnderEdit!.title, velocity: props.gameUnderEdit!.velocity}));
 			return;
 		}
 
@@ -215,11 +215,11 @@ const NewGame = (props: Props): JSX.Element => {
 
 	function onVelocityChange(newValue: string) {
 		if (!newValue) {
-			setState(prevState => ({ ...prevState, velocity: undefined }));
+			setState(prevState => ({...prevState, velocity: undefined}));
 			return;
 		}
 		const value = parseFloat(newValue);
-		setState(prevState => ({ ...prevState, velocity: value, isPointsInputInvalid: value <= 0 }));
+		setState(prevState => ({...prevState, velocity: value, isPointsInputInvalid: value <= 0}));
 	}
 
 	function onIterationWarningDismiss() {
@@ -246,7 +246,7 @@ const NewGame = (props: Props): JSX.Element => {
 
 	function onTeamWarningDismiss() {
 		setState(prevState => {
-			let selectedTeamIndex = state.teams?.findIndex(x => x.id == props.gameUnderEdit!.selectedTeamId)!;
+			const selectedTeamIndex = state.teams?.findIndex(x => x.id == props.gameUnderEdit!.selectedTeamId)!;
 			state.teamsSelection.select(selectedTeamIndex);
 			return {
 				...prevState,
@@ -287,7 +287,7 @@ const NewGame = (props: Props): JSX.Element => {
 				/>
 			)}
 			<Panel
-				titleProps={{ text: props.gameUnderEdit ? 'Edit Game' : 'New Game' }}
+				titleProps={{text: props.gameUnderEdit ? 'Edit Game' : 'New Game'}}
 				onDismiss={props.onClose}
 				footerButtonProps={[
 					{
@@ -313,8 +313,8 @@ const NewGame = (props: Props): JSX.Element => {
 						<Dropdown
 							ariaLabel="Team"
 							className="input-element"
-							placeholder="Select a team"
-							items={state.teams?.map(team => ({ id: team.id, text: team.name })) ?? []}
+							placeholder="Select a team that you are part of"
+							items={state.teams?.map(team => ({id: team.id, text: team.name})) ?? []}
 							noItemsText="No teams available"
 							disabled={!state.teams || state.teams.length <= 1}
 							onSelect={(_, item) => onTeamSelect(item)}
@@ -327,8 +327,8 @@ const NewGame = (props: Props): JSX.Element => {
 						<Dropdown
 							ariaLabel="Iteration"
 							className="input-element"
-							placeholder={state.iterations ? 'Select an iteration' : 'Select a team first'}
-							items={state.iterations?.map(iteration => ({ id: iteration.id, text: iteration.name })) ?? []}
+							placeholder={state.iterations ? 'Select an iteration to be used in this game' : 'Select a team first'}
+							items={state.iterations?.map(iteration => ({id: iteration.id, text: iteration.name})) ?? []}
 							noItemsText="No iterations available"
 							disabled={!state.iterations || state.iterations.length <= 1}
 							onSelect={(_, item) => onIterationSelect(item)}
@@ -345,7 +345,7 @@ const NewGame = (props: Props): JSX.Element => {
 								className="input-element"
 								value={state.velocity?.toString()}
 								onChange={(_, newValue) => onVelocityChange(newValue)}
-								placeholder="Velocity"
+								placeholder="Team velocity reference limit for this game"
 								inputType="number"
 							/>
 						</FormItem>

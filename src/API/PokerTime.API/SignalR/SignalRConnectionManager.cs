@@ -10,6 +10,16 @@ namespace PokerTime.API.SignalR
     {
         private static readonly ConcurrentDictionary<string, Dictionary<string, HashSet<string>>> ConnectionMap = new();
 
+        public string GetUserId(string connectionId)
+        {
+            foreach (var (gameId, users) in ConnectionMap)
+            {
+                return users.First(x => x.Value.Contains(connectionId)).Key;
+            }
+
+            throw new KeyNotFoundException($"ConnectionId {connectionId} not found");
+        }
+
         public void AddConnection(string userId, string gameId, string connectionId)
         {
             var connections = GetUserConnections(userId, gameId);

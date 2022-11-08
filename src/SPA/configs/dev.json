@@ -1,9 +1,9 @@
 {
   "id": "poker-time-dev",
   "public": false,
-  "baseUri": "https://192.168.100.99:3000",
+  "baseUri": "https://192.168.1.132:3000",
   "name": "PokerTimeDev",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "contributions": [
     {
       "id": "poker-time-hub-dev",

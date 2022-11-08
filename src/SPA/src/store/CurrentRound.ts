@@ -168,7 +168,7 @@ export const reducer = (state = initialState, action: ProjectInfoActionTypes): C
 		case SET_SELECTED_CARD_ID:
 			return {...state, selectedCardId: action.payload};
 		case SET_FLIPPED_CARDS:
-			return {...state, flippedCards: action.payload};
+			return {...state, flippedCards: action.payload, cardsWereFlipped: true};
 		case SET_CARDS_WERE_FLIPPED:
 			return {...state, cardsWereFlipped: action.payload};
 		case SET_PLAYED_CARDS:

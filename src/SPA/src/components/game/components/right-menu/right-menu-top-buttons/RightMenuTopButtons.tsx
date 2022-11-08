@@ -1,17 +1,18 @@
 ﻿import * as React from 'react';
-import { useState } from 'react';
+import {useState} from 'react';
 import './right-menu-top-buttons.scss';
-import { Button } from 'azure-devops-ui/Button';
+import {Button} from 'azure-devops-ui/Button';
 import FullScreenService from '../../../../../services/fullScreenService';
 import ShareGameDialog from '../../../../dialogs/share-game/ShareGameDialog';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../store';
+import {useSelector} from 'react-redux';
+import {AppState} from '../../../../../store';
 import EndGameDialog from '../../../../dialogs/end-game/EndGameDialog';
-import { useHistory } from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import HelpDialog from '../../../../dialogs/help-dialog/HelpDialog';
-import { GameStatus } from '../../../../../types/game-status';
-import { bindActionCreators } from 'redux';
-import { actionCreators as currentGameActionsCreators } from '../../../../../store/CurrentGame';
+import {GameStatus} from '../../../../../types/game-status';
+import {sendSignalREvent} from '../../../../../services/signalr';
+import {ClientEventType} from '../../../../../types/client-events/signalREvent';
+import {IShouldRefreshGame} from '../../../../../types/client-events/should-refresh-game';
 
 interface Props {
 	isExpanded: boolean;
@@ -31,93 +32,97 @@ const RightMenuTopButtons = (props: Props): JSX.Element => {
 	});
 
 	const history = useHistory();
-	const dispatch = useDispatch();
-	const { gameDetails } = useSelector((state: AppState) => state.currentGame);
-	const { setShouldRefreshGame } = bindActionCreators(currentGameActionsCreators, dispatch);
+	const {gameDetails} = useSelector((state: AppState) => state.currentGame);
 
 	function onFullScreenToggle() {
 		FullScreenService.toggle();
-		setState(prevState => ({ ...prevState, isFullScreen: FullScreenService.isFullScreen }));
+		setState(prevState => ({...prevState, isFullScreen: FullScreenService.isFullScreen}));
 	}
 
 	function onShareDismiss() {
-		setState(prevState => ({ ...prevState, isShareDialogOpen: false }));
+		setState(prevState => ({...prevState, isShareDialogOpen: false}));
 	}
 
 	function onHelpDismiss() {
-		setState(prevState => ({ ...prevState, isHelpDialogOpen: false }));
+		setState(prevState => ({...prevState, isHelpDialogOpen: false}));
 	}
 
 	function onEndGameDismiss() {
-		setState(prevState => ({ ...prevState, isEndDialogOpen: false }));
+		setState(prevState => ({...prevState, isEndDialogOpen: false}));
 	}
 
 	function onEndGameSubmit() {
-		setState(prevState => ({ ...prevState, isEndDialogOpen: false }));
+		setState(prevState => ({...prevState, isEndDialogOpen: false}));
 		history.push('/');
 	}
 
 	function showShareDialog() {
-		setState(prevState => ({ ...prevState, isShareDialogOpen: true }));
+		setState(prevState => ({...prevState, isShareDialogOpen: true}));
 	}
 
 	function onExitGameClick() {
 		if (gameDetails?.status === GameStatus.Ended || !gameDetails?.isOwner) {
 			history.push('/');
 		}
-		setState(prevState => ({ ...prevState, isEndDialogOpen: true }));
+		setState(prevState => ({...prevState, isEndDialogOpen: true}));
 	}
 
 	function onRefreshWorkItemsClick() {
-		setShouldRefreshGame(true);
+		sendSignalREvent({
+			type: ClientEventType.ShouldRefreshGame,
+			payload: {
+				gameId: gameDetails?.id!
+			} as IShouldRefreshGame
+		});
 	}
 
 	return (
 		<div className="right-menu-top-buttons-wrapper">
 			<Button
 				className="expand-button"
-				iconProps={{ iconName: props.isExpanded ? 'DoubleChevronRight' : 'DoubleChevronLeft' }}
+				iconProps={{iconName: props.isExpanded ? 'DoubleChevronRight' : 'DoubleChevronLeft'}}
 				subtle={true}
-				tooltipProps={{ text: 'Show less information', delayMs: 500 }}
+				tooltipProps={{text: 'Show less information', delayMs: 500}}
 				onClick={props.onExpandToggle}
 			/>
 			<Button
 				className="action-button"
-				iconProps={{ iconName: state.isFullScreen ? 'BackToWindow' : 'FullScreen' }}
+				iconProps={{iconName: state.isFullScreen ? 'BackToWindow' : 'FullScreen'}}
 				subtle={true}
-				tooltipProps={{ text: 'Toggle fullscreen mode', delayMs: 500 }}
+				tooltipProps={{text: 'Toggle fullscreen mode', delayMs: 500}}
 				onClick={onFullScreenToggle}
 			/>
 			<Button
 				className="action-button"
-				iconProps={{ iconName: 'Add' }}
+				iconProps={{iconName: 'Add'}}
 				disabled={gameDetails?.status === GameStatus.Ended}
 				subtle={true}
-				tooltipProps={{ text: 'Invite user', delayMs: 500 }}
+				tooltipProps={{text: 'Invite user', delayMs: 500}}
 				onClick={showShareDialog}
 			/>
 			<Button
 				className="action-button"
-				iconProps={{ iconName: 'Refresh' }}
+				iconProps={{iconName: 'Refresh'}}
 				disabled={gameDetails?.status === GameStatus.Ended}
 				subtle={true}
-				tooltipProps={{ text: 'Refresh information', delayMs: 500 }}
+				tooltipProps={{text: 'Refresh information', delayMs: 500}}
 				onClick={onRefreshWorkItemsClick}
 			/>
 			<Button
 				className="action-button"
-				iconProps={{ iconName: 'ChromeClose', className: 'close-icon' }}
+				iconProps={{iconName: 'ChromeClose', className: 'close-icon'}}
 				subtle={true}
-				tooltipProps={{ text: 'Exit this game', delayMs: 500 }}
+				tooltipProps={{text: 'Exit this game', delayMs: 500}}
 				onClick={onExitGameClick}
 			/>
 			<div>
-				{state.isShareDialogOpen && gameDetails && <ShareGameDialog onDismiss={onShareDismiss} gameId={gameDetails.id}/>}
-				{state.isHelpDialogOpen && gameDetails && <HelpDialog onDismiss={onHelpDismiss}/>}
+				{state.isShareDialogOpen && gameDetails && <ShareGameDialog onDismiss={onShareDismiss} gameId={gameDetails.id} />}
+				{state.isHelpDialogOpen && gameDetails && <HelpDialog onDismiss={onHelpDismiss} />}
 				{state.isEndDialogOpen && gameDetails && (
 					<EndGameDialog
 						onDismiss={onEndGameDismiss}
 						onSubmit={onEndGameSubmit}
+						showJustExit={true}
 						gameId={gameDetails.id}
 						gameTitle={gameDetails.gameTitle}
 					/>

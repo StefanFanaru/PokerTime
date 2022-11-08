@@ -1,18 +1,19 @@
 ﻿import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './game-points-card.scss';
-import { TextField } from 'azure-devops-ui/TextField';
-import { Button } from 'azure-devops-ui/Button';
-import { FormItem } from 'azure-devops-ui/FormItem';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../store';
-import { GameStatus } from '../../../../../types/game-status';
-import { getClient } from 'azure-devops-extension-api';
-import { WorkItemTrackingRestClient } from 'azure-devops-extension-api/WorkItemTracking';
-import { bindActionCreators } from 'redux';
-import { actionCreators as currentRoundActionCreators } from '../../../../../store/CurrentRound';
+import {TextField} from 'azure-devops-ui/TextField';
+import {Button} from 'azure-devops-ui/Button';
+import {FormItem} from 'azure-devops-ui/FormItem';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppState} from '../../../../../store';
+import {GameStatus} from '../../../../../types/game-status';
+import {getClient} from 'azure-devops-extension-api';
+import {WorkItemTrackingRestClient} from 'azure-devops-extension-api/WorkItemTracking';
+import {bindActionCreators} from 'redux';
+import {actionCreators as currentRoundActionCreators} from '../../../../../store/CurrentRound';
 import useAxios from 'axios-hooks';
-import { computeAveragePoints } from '../helpers';
+import {computeAveragePoints} from '../helpers';
+import {actionCreators as gameInfoActionCreators} from '../../../../../store/GameInfoCards';
 
 interface State {
 	pointsInputValue?: number;
@@ -25,45 +26,41 @@ const GamePointsCard = (): JSX.Element => {
 		isPointsInputInvalid: false,
 		averagePoints: null
 	});
-	const { gameDetails } = useSelector((state: AppState) => state.currentGame);
-	const {
-		activeWorkItemStoryPoints,
-		activeWorkItem,
-		roundId,
-		playedCards
-	} = useSelector((state: AppState) => state.currentRound);
+	const {gameDetails} = useSelector((state: AppState) => state.currentGame);
+	const {activeWorkItemStoryPoints, activeWorkItem, roundId, playedCards} = useSelector((state: AppState) => state.currentRound);
 
-	const { details: projectDetails } = useSelector((state: AppState) => state.projectInfo);
-	const [{}, patchStoryPoints] = useAxios<{ gameId: string }>(
+	const {details: projectDetails} = useSelector((state: AppState) => state.projectInfo);
+	const {playedRoundsCount} = useSelector((state: AppState) => state.gameInfoCards);
+	const [{}, patchStoryPoints] = useAxios<{gameId: string}>(
 		{
 			method: 'PATCH',
 			url: '/api/GameRound/set-story-points'
 		},
-		{ manual: true }
+		{manual: true}
 	);
 
 	const dispatch = useDispatch();
-	const { setActiveWorkItemStoryPoints } = bindActionCreators(currentRoundActionCreators, dispatch);
-
+	const {setActiveWorkItemStoryPoints} = bindActionCreators(currentRoundActionCreators, dispatch);
+	const {setPlayedRoundsCount} = bindActionCreators(gameInfoActionCreators, dispatch);
 	useEffect(() => {
 		if (!playedCards.length) {
-			setState(prevState => ({ ...prevState, averagePoints: null }));
+			setState(prevState => ({...prevState, averagePoints: null}));
 			return;
 		}
 
 		const averagePoints = computeAveragePoints(playedCards);
-		setState(prevState => ({ ...prevState, averagePoints }));
+		setState(prevState => ({...prevState, averagePoints}));
 	}, [playedCards]);
 
 	useEffect(() => {
 		if (activeWorkItemStoryPoints !== state.pointsInputValue) {
-			setState(prevState => ({ ...prevState, pointsInputValue: activeWorkItemStoryPoints }));
+			setState(prevState => ({...prevState, pointsInputValue: activeWorkItemStoryPoints}));
 		}
 	}, [activeWorkItemStoryPoints]);
 
 	function onPointsInputChange(newValue: string) {
 		const value = parseFloat(newValue);
-		setState(prevState => ({ ...prevState, pointsInputValue: value, isPointsInputInvalid: value < 0 }));
+		setState(prevState => ({...prevState, pointsInputValue: value, isPointsInputInvalid: value < 0}));
 	}
 
 	async function onPointsSave() {
@@ -82,7 +79,9 @@ const GamePointsCard = (): JSX.Element => {
 			activeWorkItem?.id!,
 			projectDetails?.id
 		);
-
+		if (activeWorkItemStoryPoints == undefined || activeWorkItemStoryPoints == null) {
+			setPlayedRoundsCount(playedRoundsCount + 1);
+		}
 		setActiveWorkItemStoryPoints(state.pointsInputValue);
 		patchStoryPoints({
 			data: {
@@ -96,7 +95,7 @@ const GamePointsCard = (): JSX.Element => {
 	return (
 		<div className="game-points-card-wrapper">
 			<div className="left">
-				<div className="top-points">
+				<div className="top-points noSelect">
 					<span>Average points:</span>
 					<span className="points">{state.averagePoints ?? '...'}</span>
 				</div>
@@ -112,14 +111,14 @@ const GamePointsCard = (): JSX.Element => {
 			</div>
 			<div className="right">
 				<Button
-					tooltipProps={{ text: 'Save points', delayMs: 500 }}
+					tooltipProps={{text: 'Save points', delayMs: 500}}
 					disabled={
 						activeWorkItemStoryPoints == state.pointsInputValue ||
 						gameDetails?.status === GameStatus.Paused ||
 						state.isPointsInputInvalid ||
 						(!state.pointsInputValue && state.pointsInputValue != 0)
 					}
-					iconProps={{ iconName: 'Save' }}
+					iconProps={{iconName: 'Save'}}
 					onClick={onPointsSave}
 				/>
 			</div>

@@ -1,23 +1,23 @@
 ﻿import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './game-info-cards.scss';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../store';
-import { getClient } from 'azure-devops-extension-api';
-import { GraphRestClient } from 'azure-devops-extension-api/Graph';
-import { Tooltip } from 'azure-devops-ui/TooltipEx';
-import { subscribeToClientEvents } from '../../../../../services/signalr';
-import { ClientEventType } from '../../../../../types/client-events/signalREvent';
-import { IPlayerDisconnectedEvent } from '../../../../../types/client-events/user-disconnected';
-import { IPlayerConnectedEvent } from '../../../../../types/client-events/user-connected';
-import { getTimePlaying } from './helpers';
-import { useInterval } from '../../../../../services/hooks/useInterval';
-import { GameStatus } from '../../../../../types/game-status';
+import {useSelector} from 'react-redux';
+import {AppState} from '../../../../../store';
+import {getClient} from 'azure-devops-extension-api';
+import {GraphRestClient} from 'azure-devops-extension-api/Graph';
+import {Tooltip} from 'azure-devops-ui/TooltipEx';
+import {subscribeToClientEvents} from '../../../../../services/signalr';
+import {ClientEventType} from '../../../../../types/client-events/signalREvent';
+import {IPlayerDisconnectedEvent} from '../../../../../types/client-events/user-disconnected';
+import {IPlayerConnectedEvent} from '../../../../../types/client-events/user-connected';
+import {getTimePlaying} from './helpers';
+import {useInterval} from '../../../../../services/hooks/useInterval';
+import {GameStatus} from '../../../../../types/game-status';
 
 interface State {
 	isActivePlayersOpened: boolean;
 	timePlaying: string;
-	players: { id: string; name: string; avatarBase64: string }[];
+	players: {id: string; name: string; avatarBase64: string}[];
 }
 
 const GameInfoCards = (): JSX.Element => {
@@ -26,10 +26,10 @@ const GameInfoCards = (): JSX.Element => {
 		players: [],
 		timePlaying: '00:00:00'
 	});
-	const { id: playerId } = useSelector((state: AppState) => state.playerDetails);
+	const {id: playerId} = useSelector((state: AppState) => state.playerDetails);
 	const gameInfoCardsState = useSelector((state: AppState) => state.gameInfoCards);
-	const { gameDetails } = useSelector((state: AppState) => state.currentGame);
-	const { roundId } = useSelector((state: AppState) => state.currentRound);
+	const {gameDetails} = useSelector((state: AppState) => state.currentGame);
+	const {roundId} = useSelector((state: AppState) => state.currentRound);
 
 	useEffect(() => {
 		if (!gameInfoCardsState.activePlayersIds.length) {
@@ -43,7 +43,7 @@ const GameInfoCards = (): JSX.Element => {
 		if (!gameDetails?.startedAt) {
 			return;
 		}
-		setState(prevState => ({ ...prevState, timePlaying: getTimePlaying(gameDetails.startedAt!, gameDetails.endedAt, roundId) }));
+		setState(prevState => ({...prevState, timePlaying: getTimePlaying(gameDetails.startedAt!, gameDetails.endedAt, roundId)}));
 	}, [gameDetails?.startedAt, gameDetails?.endedAt, roundId]);
 
 	useEffect(() => {
@@ -70,7 +70,7 @@ const GameInfoCards = (): JSX.Element => {
 			if (event.playerId === playerId) {
 				return;
 			}
-			setState(prevState => ({ ...prevState, players: prevState.players.filter(player => player.id !== event.playerId) }));
+			setState(prevState => ({...prevState, players: prevState.players.filter(player => player.id !== event.playerId)}));
 		}, ClientEventType.PlayerDisconnected);
 	}, [gameDetails?.id]);
 
@@ -79,7 +79,7 @@ const GameInfoCards = (): JSX.Element => {
 		playerIds.unshift(playerId!);
 		const newPlayers = await Promise.all(playerIds.map(async playerId => await getUserDetails(playerId)));
 
-		setState(prevState => ({ ...prevState, players: newPlayers }));
+		setState(prevState => ({...prevState, players: newPlayers}));
 	}
 
 	useInterval(() => {
@@ -93,7 +93,7 @@ const GameInfoCards = (): JSX.Element => {
 		}));
 	}, 1000);
 
-	function simpleCard(text: string, value: string | number, tooltip: string = ''): JSX.Element {
+	function simpleCard(text: string, value: string | number, tooltip = ''): JSX.Element {
 		return (
 			<Tooltip delayMs={500} text={tooltip}>
 				<div className="card default-cursor">
@@ -105,41 +105,46 @@ const GameInfoCards = (): JSX.Element => {
 	}
 
 	function onActivePlayersClick() {
-		setState(prevState => ({ ...prevState, isActivePlayersOpened: !prevState.isActivePlayersOpened }));
+		setState(prevState => ({...prevState, isActivePlayersOpened: !prevState.isActivePlayersOpened}));
 	}
 
-	async function getUserDetails(playerId: string): Promise<{ id: string; name: string; avatarBase64: string }> {
+	async function getUserDetails(playerId: string): Promise<{id: string; name: string; avatarBase64: string}> {
+		const player = {id: playerId, name: '', avatarBase64: ''};
+
+		const avatarSrc = sessionStorage.getItem(`${playerId}_avatar`);
+		const displayName = sessionStorage.getItem(`${playerId}_displayName`);
+
+		if (avatarSrc && displayName) {
+			player.avatarBase64 = avatarSrc;
+			player.name = displayName;
+			return player;
+		}
+
 		const client = getClient(GraphRestClient);
 		const descriptorResult = await client.getDescriptor(playerId);
 		const user = await client.getUser(descriptorResult.value);
 
-		const player = { id: playerId, name: user.displayName, avatarBase64: '' };
-
-		const avatarSrc = sessionStorage.getItem(playerId + '_avatar');
-		if (avatarSrc) {
-			player.avatarBase64 = avatarSrc;
-			return player;
-		}
-
 		const avatar = await client.getAvatar(descriptorResult.value);
-		sessionStorage.setItem(playerId + '_avatar', avatar.value.toString());
+		sessionStorage.setItem(`${playerId}_avatar`, avatar.value.toString());
+		sessionStorage.setItem(`${playerId}_displayName`, user.displayName);
+
 		player.avatarBase64 = avatar.value.toString();
+		player.name = user.displayName;
 		return player;
 	}
 
 	return (
 		<div className="game-info-cards-wrapper">
-			<div className="card">
+			<div className="card default-cursor">
 				<div className="title">Commitment</div>
 				<div
-					className={
-						'value ' +
-						(gameInfoCardsState.commitment <= gameInfoCardsState.velocity * 0.85
+					className={`value ${
+						gameInfoCardsState.commitment <= gameInfoCardsState.velocity * 0.85
 							? 'green'
 							: gameInfoCardsState.commitment <= gameInfoCardsState.velocity
-								? 'orange'
-								: 'red')
-					}>
+							? 'orange'
+							: 'red'
+					}`}>
 					{gameInfoCardsState.commitment}
 				</div>
 			</div>
@@ -163,7 +168,7 @@ const GameInfoCards = (): JSX.Element => {
 							<Tooltip delayMs={500} text={player.name}>
 								<img
 									className={gameInfoCardsState?.playersThatPlayedCards.includes(player.id) ? 'has-played-card' : ''}
-									src={'data:image/png;base64, ' + player.avatarBase64}
+									src={`data:image/png;base64, ${player.avatarBase64}`}
 									alt=""
 								/>
 							</Tooltip>

@@ -15,6 +15,8 @@ import {RoundStoryPointsSetEvent} from '../../../../../types/client-events/round
 import {ClientEventType} from '../../../../../types/client-events/signalREvent';
 import {IWorkItemSelectedEvent} from '../../../../../types/client-events/work-item-selecte';
 import {bookIcon, bugIcon, eyeIcon} from '../../../../../helpers/svgIcons';
+import {actionCreators as gameInfoActionCreators} from '../../../../../store/GameInfoCards';
+import configureStore from '../../../../../store/Store';
 
 interface IProps {
 	isAdmin: boolean;
@@ -32,6 +34,7 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 	});
 
 	const dispatch = useDispatch();
+	const {setCommitment, setPlayedRoundsCount} = bindActionCreators(gameInfoActionCreators, dispatch);
 	const {setActiveWorkItem, setActiveWorkItemId, setActiveWorkItemStoryPoints} = bindActionCreators(
 		currentRoundActionsCreators,
 		dispatch
@@ -46,7 +49,13 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 		}
 		subscribeToClientEvents<RoundStoryPointsSetEvent>(event => {
 			setState(prevState => {
+				const gameInfoCards = configureStore.getState().gameInfoCards;
+
 				const workItem = prevState.workItems.find(item => item.id === event.workItemId)!;
+				if (workItem.points === undefined || workItem.points === null) {
+					setPlayedRoundsCount(gameInfoCards.playedRoundsCount + 1);
+				}
+				setCommitment(gameInfoCards.commitment + event.submittedStoryPoints - (workItem.points ?? 0));
 				workItem.points = event.submittedStoryPoints;
 				return {...prevState, workItems: [...prevState.workItems]};
 			});
@@ -58,6 +67,8 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 					const index = prevState.workItems.findIndex(x => x.id === event.workItemId)!;
 					prevState.workItems.forEach(x => (x.isSelected = false));
 					prevState.workItems[index].isSelected = true;
+					setActiveWorkItemId(event.workItemId);
+
 					return {
 						...prevState,
 						workItems: [...prevState.workItems]
@@ -140,13 +151,13 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 	return (
 		<div className={props.isAdmin && props.isExpanded ? 'right-menu-items-wrapper' : 'right-menu-items-wrapper full'}>
 			<div className="header">
-				<div className="row">
+				<div className="row noSelect">
 					<div className="col1">#</div>
 					<div className="col2">Title</div>
 					<div className="col3">Points</div>
 				</div>
 			</div>
-			<PerfectScrollbar className={'body ' + (gameDetails?.status === GameStatus.Paused ? 'paused' : '')}>
+			<PerfectScrollbar className={`body ${gameDetails?.status === GameStatus.Paused ? 'paused' : ''}`}>
 				{state.workItems.map((item, index) => (
 					<div key={index} className={item.isActive ? 'active row' : 'row'} onClick={() => onItemClick(item)}>
 						<div className="col1">{index + 1}</div>

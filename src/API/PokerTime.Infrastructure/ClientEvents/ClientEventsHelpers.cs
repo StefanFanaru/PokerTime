@@ -13,7 +13,7 @@ namespace PokerTime.Infrastructure.ClientEvents;
 public static class ClientEventsHelpers
 {
     public static async Task CallClientEventHandler(this IServiceProvider serviceProvider,
-        ClientEventType eventType, string payload)
+        ClientEventType eventType, string playerId, string payload)
     {
         var typeEntries = Generics.DerivedOf(Assembly.GetExecutingAssembly().GetTypes(), typeof(IClientEventHandler<>));
         var handlerTypeEntries = typeEntries.Where(typeEntry =>
@@ -44,7 +44,9 @@ public static class ClientEventsHelpers
         var handlerTypeEntry = handlerTypeEntries.Single();
         var handler = serviceProvider.GetRequiredService(handlerTypeEntry.ClosedGenericType);
         var payloadObject = new[]
-            { JsonConvert.DeserializeObject(payload, handlerTypeEntry.ClosedGenericType.GenericTypeArguments.Single()) };
+        {
+            playerId, JsonConvert.DeserializeObject(payload, handlerTypeEntry.ClosedGenericType.GenericTypeArguments.Single())
+        };
 
         await ((Task)handlerTypeEntry.Type.GetMethod("Handle")!.Invoke(handler, payloadObject))!;
     }

@@ -1,21 +1,22 @@
 ﻿import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './card-deck.scss';
 import PlayingCard from '../playing-card/PlayingCard';
-import { IPlayingCard } from '../../../../../types/card';
+import {IPlayingCard} from '../../../../../types/card';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { sendSignalREvent, subscribeToClientEvents } from '../../../../../services/signalr';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../store';
+import {sendSignalREvent, subscribeToClientEvents} from '../../../../../services/signalr';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppState} from '../../../../../store';
 import useAxios from 'axios-hooks';
-import { IPlayingCardResponse } from '../../../../../types/playing-card-response';
-import { ClientEventType } from '../../../../../types/client-events/signalREvent';
-import { ICardSelectedEvent } from '../../../../../types/client-events/card-selected';
-import { bindActionCreators } from 'redux';
-import { actionCreators as currentRoundActionsCreators } from '../../../../../store/CurrentRound';
-import { actionCreators as currentGameActionCreators } from '../../../../../store/CurrentGame';
-import { ICardDeselectedEvent } from '../../../../../types/client-events/card-deselected';
-import { GameStatus } from '../../../../../types/game-status';
+import {IPlayingCardResponse} from '../../../../../types/playing-card-response';
+import {ClientEventType} from '../../../../../types/client-events/signalREvent';
+import {ICardSelectedEvent} from '../../../../../types/client-events/card-selected';
+import {bindActionCreators} from 'redux';
+import {actionCreators as currentRoundActionsCreators} from '../../../../../store/CurrentRound';
+import {actionCreators as currentGameActionCreators} from '../../../../../store/CurrentGame';
+import {ICardDeselectedEvent} from '../../../../../types/client-events/card-deselected';
+import {GameStatus} from '../../../../../types/game-status';
+import configureStore from '../../../../../store/Store';
 
 interface State {
 	cards: IPlayingCard[];
@@ -29,21 +30,21 @@ const CardDeck = (): JSX.Element => {
 	});
 
 	const [scrollBarRef, setScrollBarRef] = useState<PerfectScrollbar | null>();
-	const [{ data: playingCardsResponse }] = useAxios<IPlayingCardResponse[]>({
+	const [{data: playingCardsResponse}] = useAxios<IPlayingCardResponse[]>({
 		url: '/api/cards/list'
 	});
-	const [{ response: playedCardResponse }, getPlayedCard] = useAxios<{ cardId: string }>({}, { manual: true });
+	const [{response: playedCardResponse}, getPlayedCard] = useAxios<{cardId: string}>({}, {manual: true});
 
-	const { roundId } = useSelector((state: AppState) => state.currentRound);
-	const { gameDetails } = useSelector((state: AppState) => state.currentGame);
-	const { id: playerId } = useSelector((state: AppState) => state.playerDetails);
+	const {roundId} = useSelector((state: AppState) => state.currentRound);
+	const {gameDetails} = useSelector((state: AppState) => state.currentGame);
+	const {id: playerId} = useSelector((state: AppState) => state.playerDetails);
 
 	const dispatch = useDispatch();
-	const { setSelectedCardId, increaseCurrentHiddenCardsCount, decreaseCurrentHiddenCardsCount } = bindActionCreators(
+	const {setSelectedCardId, increaseCurrentHiddenCardsCount, decreaseCurrentHiddenCardsCount} = bindActionCreators(
 		currentRoundActionsCreators,
 		dispatch
 	);
-	const { setPlayingCards } = bindActionCreators(currentGameActionCreators, dispatch);
+	const {setPlayingCards} = bindActionCreators(currentGameActionCreators, dispatch);
 
 	useEffect(() => {
 		if (!roundId || !playedCardResponse) {
@@ -63,7 +64,7 @@ const CardDeck = (): JSX.Element => {
 			...card,
 			isActive: false
 		}));
-		setState(prevState => ({ ...prevState, cards }));
+		setState(prevState => ({...prevState, cards}));
 		setPlayingCards(cards);
 
 		getPlayedCard({
@@ -77,6 +78,10 @@ const CardDeck = (): JSX.Element => {
 		}
 
 		subscribeToClientEvents<ICardSelectedEvent>(async event => {
+			const state = configureStore.getState();
+			if (state.currentRound.roundId !== event.roundId) {
+				return;
+			}
 			if (event.playerId != playerId || !event.playingCardId) {
 				return;
 			}
@@ -94,6 +99,10 @@ const CardDeck = (): JSX.Element => {
 		}, ClientEventType.CardSelected);
 
 		subscribeToClientEvents<ICardDeselectedEvent>(event => {
+			const state = configureStore.getState();
+			if (state.currentRound.roundId !== event.roundId) {
+				return;
+			}
 			if (event.playerId != playerId) {
 				return;
 			}
@@ -113,13 +122,13 @@ const CardDeck = (): JSX.Element => {
 		setState(prevState => {
 			prevState.cards.forEach(x => (x.isActive = false));
 			if (!playedCardResponse?.data) {
-				return { ...prevState, cards: [...prevState.cards] };
+				return {...prevState, cards: [...prevState.cards]};
 			}
 			const card = prevState.cards.find(x => x.id == playedCardResponse.data.cardId)!;
 			if (card) {
 				card.isActive = true;
 			}
-			return { ...prevState, cards: [...prevState.cards] };
+			return {...prevState, cards: [...prevState.cards]};
 		});
 	}, [playedCardResponse]);
 
@@ -133,7 +142,7 @@ const CardDeck = (): JSX.Element => {
 		}
 
 		if (!state.initialCardCheckDone && playedCardResponse?.data?.cardId) {
-			setState(prevState => ({ ...prevState, initialCardCheckDone: true }));
+			setState(prevState => ({...prevState, initialCardCheckDone: true}));
 			return;
 		}
 	}, [state.cards]);
@@ -143,11 +152,11 @@ const CardDeck = (): JSX.Element => {
 			return;
 		}
 		setState(prevState => {
-			let prevCards = [...prevState.cards];
-			let activeIndex = prevCards.findIndex(card => card.isActive);
-			let clickedIndex = prevCards.findIndex(card => card.id === cardId);
-			let activeCard = { ...prevCards[activeIndex] };
-			let clickedCard = { ...prevCards[clickedIndex] };
+			const prevCards = [...prevState.cards];
+			const activeIndex = prevCards.findIndex(card => card.isActive);
+			const clickedIndex = prevCards.findIndex(card => card.id === cardId);
+			const activeCard = {...prevCards[activeIndex]};
+			const clickedCard = {...prevCards[clickedIndex]};
 			if (activeCard) {
 				activeCard.isActive = false;
 				prevCards[activeIndex] = activeCard;
@@ -155,7 +164,6 @@ const CardDeck = (): JSX.Element => {
 					sendSignalREvent({
 						type: ClientEventType.CardDeselected,
 						payload: {
-							playerId: playerId,
 							roundId: roundId
 						} as ICardDeselectedEvent
 					});
@@ -172,7 +180,6 @@ const CardDeck = (): JSX.Element => {
 			sendSignalREvent({
 				type: ClientEventType.CardSelected,
 				payload: {
-					playerId: playerId,
 					playingCardId: clickedCard.id,
 					roundId: roundId,
 					gameId: gameDetails?.id
@@ -191,7 +198,7 @@ const CardDeck = (): JSX.Element => {
 	return (
 		<PerfectScrollbar className="card-deck-wrapper" ref={ref => setScrollBarRef(ref)}>
 			{state.cards.map((card, index) => (
-				<PlayingCard onClick={onCardClick} key={index} card={card}/>
+				<PlayingCard onClick={onCardClick} key={index} card={card} />
 			))}
 		</PerfectScrollbar>
 	);

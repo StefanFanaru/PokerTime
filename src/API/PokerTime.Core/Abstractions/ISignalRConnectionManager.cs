@@ -4,6 +4,7 @@ namespace PokerTime.Core.Abstractions
 {
     public interface ISignalRConnectionManager
     {
+        string GetUserId(string connectionId);
         void AddConnection(string userId, string gameId, string connectionId);
         void RemoveConnection(string connectionId);
         Dictionary<string, IEnumerable<string>> GetAllConnectionsOfCoPlayers(string connectionId);

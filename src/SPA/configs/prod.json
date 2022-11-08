@@ -2,7 +2,7 @@
   "id": "poker-time",
   "public": true,
   "name": "PokerTime",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "contributions": [
     {
       "id": "poker-time-hub",

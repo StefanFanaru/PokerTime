@@ -24,6 +24,7 @@ import {ClientEventType} from '../../types/client-events/signalREvent';
 import {PauseToggledEvent} from '../../types/client-events/pause-toggled-event';
 import {GameEndedEvent} from '../../types/client-events/game-ended';
 import GameEndedDialog from '../dialogs/game-ended/GameEndedDialog';
+import {IShouldRefreshGame} from '../../types/client-events/should-refresh-game';
 
 interface State {
 	workItemsDetailed: IWorkItemDetails[];
@@ -33,7 +34,7 @@ interface State {
 }
 
 const Game = (): JSX.Element => {
-	let {id} = useParams<{id: string}>();
+	const {id} = useParams<{id: string}>();
 	const dispatch = useDispatch();
 	const {setGameDetails} = bindActionCreators(currentGameActionsCreators, dispatch);
 	const {setActiveWorkItem, setActiveWorkItemId, setRoundId, setActiveWorkItemStoryPoints, setCardsWereFlipped} =
@@ -156,7 +157,6 @@ const Game = (): JSX.Element => {
 
 		setGameDetails(state.gameDetails);
 		setVelocity(state.gameDetails.velocity);
-		setPlayedRoundsCount(state.gameDetails.playedRoundsCount);
 		setIsPaused(state.gameDetails.status === GameStatus.Paused);
 
 		if (gameDetails?.id === state.gameDetails.id) {
@@ -168,6 +168,10 @@ const Game = (): JSX.Element => {
 		subscribeToClientEvents<PauseToggledEvent>(event => {
 			setIsPaused(event.isPaused);
 		}, ClientEventType.PauseToggled);
+
+		subscribeToClientEvents<IShouldRefreshGame>(() => {
+			setShouldRefreshGame(true);
+		}, ClientEventType.ShouldRefreshGame);
 
 		subscribeToClientEvents<GameEndedEvent>(_ => {
 			setGameStatus(GameStatus.Ended);
@@ -242,6 +246,8 @@ const Game = (): JSX.Element => {
 		});
 
 		setState(prevState => ({...prevState, workItemLists}));
+		setCommitment(workItemLists.map(x => x.points).reduce((a, b) => (a ?? 0) + (b ?? 0), 0) ?? 0);
+		setPlayedRoundsCount(workItemLists.filter(x => x.points == 0 || (x.points && x.points > 0)).length);
 
 		const workItemsData = await getClient(WorkItemTrackingRestClient).getWorkItemsBatch(
 			{
@@ -268,7 +274,7 @@ const Game = (): JSX.Element => {
 
 		setState(prevState => ({...prevState, workItemsDetailed}));
 
-		let activeWorkItem = workItemsDetailed.find(x => x.id === gameDetails.activeWorkItemId);
+		const activeWorkItem = workItemsDetailed.find(x => x.id === gameDetails.activeWorkItemId);
 
 		let roundWorkItemId = workItemsDetailed[0].id;
 		if (activeWorkItem) {

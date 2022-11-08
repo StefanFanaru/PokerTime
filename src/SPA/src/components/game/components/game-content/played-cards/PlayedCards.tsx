@@ -1,22 +1,22 @@
 ﻿import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './played-cards.scss';
 import PlayedCard from '../playing-card-back/PlayedCard';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { getClient } from 'azure-devops-extension-api';
-import { GraphRestClient } from 'azure-devops-extension-api/Graph';
-import { subscribeToClientEvents } from '../../../../../services/signalr';
-import { ClientEventType } from '../../../../../types/client-events/signalREvent';
-import { IPlayedCard } from '../../../../../types/played-card';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../store';
+import {getClient} from 'azure-devops-extension-api';
+import {GraphRestClient} from 'azure-devops-extension-api/Graph';
+import {subscribeToClientEvents} from '../../../../../services/signalr';
+import {ClientEventType} from '../../../../../types/client-events/signalREvent';
+import {IPlayedCard} from '../../../../../types/played-card';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppState} from '../../../../../store';
 import useAxios from 'axios-hooks';
-import { ICardDeselectedEvent } from '../../../../../types/client-events/card-deselected';
-import { ICardsWereFlippedEvent } from '../../../../../types/client-events/cards-were-flipped';
-import { bindActionCreators } from 'redux';
-import { actionCreators as currentRoundActionsCreators } from '../../../../../store/CurrentRound';
-import { actionCreators as gameInfoCardsActionCreators } from '../../../../../store/GameInfoCards';
-import { ICardSelectedEvent } from '../../../../../types/client-events/card-selected';
+import {ICardDeselectedEvent} from '../../../../../types/client-events/card-deselected';
+import {ICardsWereFlippedEvent} from '../../../../../types/client-events/cards-were-flipped';
+import {bindActionCreators} from 'redux';
+import {actionCreators as currentRoundActionsCreators} from '../../../../../store/CurrentRound';
+import {actionCreators as gameInfoCardsActionCreators} from '../../../../../store/GameInfoCards';
+import {ICardSelectedEvent} from '../../../../../types/client-events/card-selected';
 import configureStore from '../../../../../store/Store';
 
 interface State {
@@ -28,10 +28,10 @@ const PlayedCards = (): JSX.Element => {
 		cards: []
 	});
 	const [scrollBarRef, setScrollBarRef] = useState<PerfectScrollbar | null>();
-	const { id: playerId } = useSelector((state: AppState) => state.playerDetails);
-	const { selectedCardId, roundId, flippedCards, cardsWereFlipped } = useSelector((state: AppState) => state.currentRound);
-	const { gameDetails, playingCards } = useSelector((state: AppState) => state.currentGame);
-	const [{ response: playedCardsResponse }, getPlayedCards] = useAxios<IPlayedCard[]>({}, { manual: true });
+	const {id: playerId} = useSelector((state: AppState) => state.playerDetails);
+	const {selectedCardId, roundId, flippedCards, cardsWereFlipped} = useSelector((state: AppState) => state.currentRound);
+	const {gameDetails, playingCards} = useSelector((state: AppState) => state.currentGame);
+	const [{response: playedCardsResponse}, getPlayedCards] = useAxios<IPlayedCard[]>({}, {manual: true});
 
 	const dispatch = useDispatch();
 	const {
@@ -41,7 +41,7 @@ const PlayedCards = (): JSX.Element => {
 		increaseCurrentHiddenCardsCount,
 		decreaseCurrentHiddenCardsCount
 	} = bindActionCreators(currentRoundActionsCreators, dispatch);
-	const { setPlayersThatPlayedCards } = bindActionCreators(gameInfoCardsActionCreators, dispatch);
+	const {setPlayersThatPlayedCards} = bindActionCreators(gameInfoCardsActionCreators, dispatch);
 
 	useEffect(() => {
 		if (roundId) {
@@ -96,6 +96,28 @@ const PlayedCards = (): JSX.Element => {
 		});
 	}, [selectedCardId]);
 
+	async function getPlayerData(playerId: string): Promise<void> {
+		const avatarSrc = sessionStorage.getItem(`${playerId}_avatar`);
+		const displayName = sessionStorage.getItem(`${playerId}_displayName`);
+
+		if (avatarSrc && displayName) {
+			return;
+		}
+
+		const client = getClient(GraphRestClient);
+		const descriptorResult = await client.getDescriptor(playerId);
+		const avatar = await client.getAvatar(descriptorResult.value);
+		const user = await client.getUser(descriptorResult.value);
+		sessionStorage.setItem(`${playerId}_avatar`, avatar.value.toString());
+		sessionStorage.setItem(`${playerId}_displayName`, user.displayName);
+	}
+
+	useEffect(() => {
+		if (playerId) {
+			getPlayerData(playerId);
+		}
+	}, [playerId]);
+
 	useEffect(() => {
 		if (!flippedCards.length) {
 			return;
@@ -127,12 +149,20 @@ const PlayedCards = (): JSX.Element => {
 		}
 
 		subscribeToClientEvents<ICardSelectedEvent>(async event => {
+			const state = configureStore.getState();
+			if (state.currentRound.roundId !== event.roundId) {
+				return;
+			}
 			addPlayerThatPlayedCard(event.playerId);
 			await insertNewCard(event);
 			increaseCurrentHiddenCardsCount();
 		}, ClientEventType.CardSelected);
 
 		subscribeToClientEvents<ICardDeselectedEvent>(event => {
+			const state = configureStore.getState();
+			if (state.currentRound.roundId !== event.roundId) {
+				return;
+			}
 			removePlayerThatPlayedCard(event.playerId);
 			removeCurrentPlayerCard(event.playerId);
 			decreaseCurrentHiddenCardsCount();
@@ -159,11 +189,11 @@ const PlayedCards = (): JSX.Element => {
 
 	function removeCurrentPlayerCard(playerIdParam: string) {
 		setState(prevState => {
-			return { ...prevState, cards: [...prevState.cards.filter(c => c.playerId !== playerIdParam)] };
+			return {...prevState, cards: [...prevState.cards.filter(c => c.playerId !== playerIdParam)]};
 		});
 	}
 
-	async function insertNewCard(selectedCard: ICardSelectedEvent) {
+	async function insertNewCard(selectedCard: ICardSelectedEvent): Promise<void> {
 		const newCard: IPlayedCard = await buildCardWithUserDetails(selectedCard);
 
 		setState(prevState => {
@@ -177,10 +207,10 @@ const PlayedCards = (): JSX.Element => {
 
 			if (selectedCard.playerId === playerId) {
 				prevState.cards.unshift(newCard);
-				return { ...prevState, cards: [...prevState.cards] };
+				return {...prevState, cards: [...prevState.cards]};
 			}
 
-			return { ...prevState, cards: [...prevState.cards, newCard] };
+			return {...prevState, cards: [...prevState.cards, newCard]};
 		});
 	}
 
@@ -201,30 +231,25 @@ const PlayedCards = (): JSX.Element => {
 	async function addPlayersCards(cards: IPlayedCard[]) {
 		const newCards = await Promise.all(cards.map(async card => await buildCardWithUserDetails(card)));
 
-		setState(prevState => ({ ...prevState, cards: [...newCards] }));
+		setState(prevState => ({...prevState, cards: [...newCards]}));
 	}
 
 	async function buildCardWithUserDetails(card: IPlayedCard | ICardDeselectedEvent): Promise<IPlayedCard> {
-		const avatarSrc = sessionStorage.getItem(card.playerId + '_avatar');
-		const client = getClient(GraphRestClient);
-		const descriptorResult = await client.getDescriptor(card.playerId);
-		const user = await client.getUser(descriptorResult.value);
-		if (avatarSrc) {
-			return {
-				...card,
-				isAway: false,
-				userName: user.displayName,
-				avatarBase64: avatarSrc
-			};
+		let avatarSrc = sessionStorage.getItem(`${card.playerId}_avatar`)!;
+		let playerDisplayName = sessionStorage.getItem(`${card.playerId}_displayName`)!;
+
+		if (!avatarSrc || !playerDisplayName) {
+			await getPlayerData(card.playerId);
 		}
 
-		const avatar = await client.getAvatar(descriptorResult.value);
-		sessionStorage.setItem(card.playerId + '_avatar', avatar.value.toString());
+		avatarSrc = sessionStorage.getItem(`${card.playerId}_avatar`)!;
+		playerDisplayName = sessionStorage.getItem(`${card.playerId}_displayName`)!;
+
 		return {
 			...card,
 			isAway: false,
-			userName: user.displayName,
-			avatarBase64: avatar.value.toString()
+			userName: playerDisplayName,
+			avatarBase64: avatarSrc
 		};
 	}
 

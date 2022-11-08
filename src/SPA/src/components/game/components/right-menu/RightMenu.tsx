@@ -18,8 +18,10 @@ import {GameStatus} from '../../../../types/game-status';
 import {IFlippedCard} from '../../../../types/flipped-card';
 import * as SDK from 'azure-devops-extension-sdk';
 import {IWorkItemFormNavigationService, WorkItemTrackingServiceIds} from 'azure-devops-extension-api/WorkItemTracking';
-import {IWorkItemDetails} from '../../../../types/work-items/work-item-details';
 import {Spinner, SpinnerSize} from 'azure-devops-ui/Spinner';
+import {sendSignalREvent} from '../../../../services/signalr';
+import {ClientEventType} from '../../../../types/client-events/signalREvent';
+import {IShouldRefreshGame} from '../../../../types/client-events/should-refresh-game';
 
 interface IState {
 	isAdmin: boolean;
@@ -43,8 +45,7 @@ const RightMenu = (props: IProps): JSX.Element => {
 		isPreviousDisabled: true
 	});
 	const dispatch = useDispatch();
-	const {setActiveWorkItemId, setFlippedCards, setCardsWereFlipped, setActiveWorkItem, setActiveWorkItemStoryPoints} =
-		bindActionCreators(currentRoundActionsCreators, dispatch);
+	const {setActiveWorkItemId, setFlippedCards, setCardsWereFlipped} = bindActionCreators(currentRoundActionsCreators, dispatch);
 	const {increasePlayedRoundsCount} = bindActionCreators(gameInfoCardsActionCreators, dispatch);
 
 	const {gameDetails, shouldRefreshGame} = useSelector((state: AppState) => state.currentGame);
@@ -201,9 +202,6 @@ const RightMenu = (props: IProps): JSX.Element => {
 	}
 
 	function onFlipClick() {
-		if (flipCardsResponse?.data) {
-			return;
-		}
 		flipCardsRequest({
 			data: {
 				roundId: roundId!,
@@ -217,30 +215,18 @@ const RightMenu = (props: IProps): JSX.Element => {
 			WorkItemTrackingServiceIds.WorkItemFormNavigationService
 		);
 
-		await service.openWorkItem(props.workItems.find(x => x.id === activeWorkItemId)!.id, false).then(item => {
-			const points = item.fields['Microsoft.VSTS.Scheduling.StoryPoints'];
-			const storyPoints = points ? parseFloat(points) : undefined;
-			const workItemDetails: IWorkItemDetails = {
-				id: item.id,
-				points: storyPoints,
-				description: item.fields['System.Description'],
-				tags: item.fields['System.Tags']?.split(';'),
-				title: item.fields['System.Title'],
-				type: item.fields['System.WorkItemType'],
-				url: item.url
-			};
-
-			const workItem = props.workItems.find(x => x.id === activeWorkItemId)!;
-			workItem.points = storyPoints;
-			workItem.title = workItemDetails.title;
-
-			setActiveWorkItem(workItemDetails);
-			setActiveWorkItemStoryPoints(storyPoints);
+		await service.openWorkItem(props.workItems.find(x => x.id === activeWorkItemId)!.id, false).then(() => {
+			sendSignalREvent({
+				type: ClientEventType.ShouldRefreshGame,
+				payload: {
+					gameId: gameDetails?.id!
+				} as IShouldRefreshGame
+			});
 		});
 	}
 
 	return (
-		<div id="right-menu-retractable" className={'right-menu-wrapper ' + (state.isExpanded ? '' : 'retracted')}>
+		<div id="right-menu-retractable" className={`right-menu-wrapper ${state.isExpanded ? '' : 'retracted'}`}>
 			{shouldRefreshGame && <Spinner size={SpinnerSize.medium} className="spinner-items" />}
 			<div className="top">
 				<div className="title">

@@ -41,7 +41,8 @@ namespace PokerTime.API.SignalR
         public async Task ReceivedEvent(string message)
         {
             var receivedEvent = JsonConvert.DeserializeObject<ReceivedEvent>(message);
-            await _serviceProvider.CallClientEventHandler(receivedEvent.Type, receivedEvent.Payload);
+            var playerId = _signalRConnectionManager.GetUserId(Context.ConnectionId);
+            await _serviceProvider.CallClientEventHandler(receivedEvent.Type, playerId, receivedEvent.Payload);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)

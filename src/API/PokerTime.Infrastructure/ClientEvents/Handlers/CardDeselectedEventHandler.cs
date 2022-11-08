@@ -21,7 +21,7 @@ public class CardDeselectedEventHandler : IClientEventHandler<CardDeselectedEven
         _repository = repository;
     }
 
-    public async Task Handle(CardDeselectedEvent payload)
+    public async Task Handle(string playerId, CardDeselectedEvent payload)
     {
         var isGameEnded = await _repository.Query<GameRound>()
             .Where(x => x.Id == payload.RoundId)
@@ -33,7 +33,8 @@ public class CardDeselectedEventHandler : IClientEventHandler<CardDeselectedEven
             return;
         }
 
-        await _repository.Query<PlayedCard>().Where(x => x.RoundId == payload.RoundId && x.PlayerId == payload.PlayerId)
+        payload.PlayerId = playerId;
+        await _repository.Query<PlayedCard>().Where(x => x.RoundId == payload.RoundId && x.PlayerId == playerId)
             .DeleteFromQueryAsync();
 
         await _clientEventSender.SendToAllInRound(payload, payload.RoundId);
