@@ -54,14 +54,14 @@ public class CardSelectedEventHandler : IClientEventHandler<CardSelectedEvent>
         });
 
         payload.PlayerId = playerId;
-        await _clientEventSender.SendToAllInRound(cardsWereFlipped
+        await _clientEventSender.SendToAllInRoundExceptCurrentPlayer(cardsWereFlipped
             ? payload
             : new CardSelectedEvent
             {
                 RoundId = payload.RoundId,
                 PlayerId = playerId,
                 GameId = payload.GameId
-            }, payload.RoundId);
+            }, payload.RoundId, playerId);
 
         await _clientEventSender.SendToUserAsync(payload, playerId, payload.GameId);
     }

@@ -25,7 +25,7 @@ export async function startSignalRConnection(token: string, gameId: string): Pro
 
 			connection!.on('client-events', message => {
 				const parsedMessage = JSON.parse(message) as IClientEvent;
-				// console.log('Received ClientEvent', parsedMessage.type, JSON.parse(message).innerEventJson);
+				console.log('Received ClientEvent', parsedMessage.type, JSON.parse(message).innerEventJson);
 				clientEventsMessages.notify(parsedMessage.innerEventJson, `${parsedMessage.type}-${parsedMessage.gameId}`);
 			});
 		})

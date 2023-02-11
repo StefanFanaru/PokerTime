@@ -1,19 +1,19 @@
 ﻿import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { Route, Switch, useHistory } from 'react-router-dom';
-import { AppState } from './store';
-import { bindActionCreators, Dispatch } from 'redux';
-import { ConnectedRouter, RouterLocation } from 'connected-react-router';
-import { ToastContainer } from 'react-toastify';
+import {useEffect, useRef, useState} from 'react';
+import {connect, useDispatch, useSelector} from 'react-redux';
+import {Route, Switch, useHistory} from 'react-router-dom';
+import {AppState} from './store';
+import {bindActionCreators, Dispatch} from 'redux';
+import {ConnectedRouter, RouterLocation} from 'connected-react-router';
+import {ToastContainer} from 'react-toastify';
 import CornerSpinner from './components/core/corner-spinner/CornerSpinner';
-import { actionCreators as appUserActionCreators } from './store/PlayerDetails';
-import { actionCreators as projectInfoActionCreators } from './store/ProjectInfo';
-import { actionCreators as authDataActionCreators } from './store/AuthData';
-import { actionCreators as parentFrameDataActionCreators } from './store/ParentFrameData';
-import { IUser } from './types/common/user';
+import {actionCreators as appUserActionCreators} from './store/PlayerDetails';
+import {actionCreators as projectInfoActionCreators} from './store/ProjectInfo';
+import {actionCreators as authDataActionCreators} from './store/AuthData';
+import {actionCreators as parentFrameDataActionCreators} from './store/ParentFrameData';
+import {IUser} from './types/common/user';
 import * as SDK from 'azure-devops-extension-sdk';
-import { CommonServiceIds, IHostNavigationService, IProjectPageService } from 'azure-devops-extension-api';
+import {CommonServiceIds, IHostNavigationService, IProjectPageService} from 'azure-devops-extension-api';
 import Game from './components/game/Game';
 import FullScreenService from './services/fullScreenService';
 import Home from './components/home/Home';
@@ -21,10 +21,10 @@ import AuthService from './services/auth/auth.service';
 import Forbidden from './components/forbidden/Forbidden';
 import LoadingScreen from './components/loading-screen/LoadingScreen';
 import ErrorPage from './components/error-page/ErrorPage';
-import { useInterval } from './services/hooks/useInterval';
-import { parseJwt } from './helpers/helpers';
+import {useInterval} from './services/hooks/useInterval';
+import {parseJwt} from './helpers/helpers';
 import axios from 'axios';
-import { setupRouting } from './helpers/setup-routing';
+import {setupRouting} from './helpers/setup-routing';
 
 interface State {
 	isLoading: boolean;
@@ -43,16 +43,16 @@ const Routes = (): JSX.Element => {
 
 	const firstUpdate = useRef(true);
 	const dispatch = useDispatch();
-	const { setUserDetails } = bindActionCreators(appUserActionCreators, dispatch);
-	const { setProjectInfo } = bindActionCreators(projectInfoActionCreators, dispatch);
-	const { setParentFrameBaseUrl } = bindActionCreators(parentFrameDataActionCreators, dispatch);
-	const { setToken } = bindActionCreators(authDataActionCreators, dispatch);
+	const {setUserDetails} = bindActionCreators(appUserActionCreators, dispatch);
+	const {setProjectInfo} = bindActionCreators(projectInfoActionCreators, dispatch);
+	const {setParentFrameBaseUrl} = bindActionCreators(parentFrameDataActionCreators, dispatch);
+	const {setToken} = bindActionCreators(authDataActionCreators, dispatch);
 	const authDataState = useSelector((state: AppState) => state.authData);
 
 	const history = useHistory();
 
 	function setLoadingLabel(label: string): void {
-		setState(prevState => ({ ...prevState, loadingLabel: label }));
+		setState(prevState => ({...prevState, loadingLabel: label}));
 	}
 
 	async function authenticateUser(): Promise<void> {
@@ -70,12 +70,12 @@ const Routes = (): JSX.Element => {
 			token = response.token;
 			if (!token) {
 				history.push(isForbidden ? '/forbidden' : '/error');
-				setState(prevState => ({ ...prevState, isLoading: false, isForbidden: isForbidden, isError: !isForbidden }));
+				setState(prevState => ({...prevState, isLoading: false, isForbidden: isForbidden, isError: !isForbidden}));
 				return;
 			}
 		}
 
-		axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 		setToken(token);
 		localStorage.setItem('token', token);
 	}
@@ -116,7 +116,7 @@ const Routes = (): JSX.Element => {
 			}
 
 			await FullScreenService.init();
-			setState(prevState => ({ ...prevState, isLoading: false }));
+			setState(prevState => ({...prevState, isLoading: false}));
 			firstUpdate.current = false;
 		});
 
@@ -153,24 +153,24 @@ const Routes = (): JSX.Element => {
 	}
 
 	return state.isLoading ? (
-		<LoadingScreen label={state.loadingLabel}/>
+		<LoadingScreen label={state.loadingLabel} />
 	) : (
 		<React.Fragment>
-			<ToastContainer limit={5} autoClose={3000} position="bottom-right"/>
+			<ToastContainer limit={5} autoClose={3000} position="bottom-right" />
 			<div className="page-container">
-				<CornerSpinner/>
+				<CornerSpinner />
 				<ConnectedRouter history={history}>
 					{state.isForbidden ? (
-						<Forbidden userNotAuthenticated={true}/>
+						<Forbidden userNotAuthenticated={true} />
 					) : state.isError ? (
-						<ErrorPage message="An unexpected error occured, please try again later." canGoHome={false}/>
+						<ErrorPage message="An unexpected error occured, please try again later." canGoHome={false} />
 					) : (
 						<Switch>
-							<Route exact path="/" component={Home}/>
-							<Route exact path="/game/:id" component={Game}/>
-							<Route exact path="/error" component={ErrorPage}/>
-							<Route exact path="/forbidden" component={Forbidden}/>
-							<Route exact path="*" component={Home}/>
+							<Route exact path="/" component={Home} />
+							<Route exact path="/game/:id" component={Game} />
+							<Route exact path="/error" component={ErrorPage} />
+							<Route exact path="/forbidden" component={Forbidden} />
+							<Route exact path="*" component={Home} />
 						</Switch>
 					)}
 				</ConnectedRouter>
@@ -179,7 +179,7 @@ const Routes = (): JSX.Element => {
 	);
 };
 
-function mapStateToProps(state: AppState): { user: IUser | undefined; isLoadingUser: boolean; location: RouterLocation<unknown> } {
+function mapStateToProps(state: AppState): {user: IUser | undefined; isLoadingUser: boolean; location: RouterLocation<unknown>} {
 	return {
 		user: undefined,
 		isLoadingUser: false,

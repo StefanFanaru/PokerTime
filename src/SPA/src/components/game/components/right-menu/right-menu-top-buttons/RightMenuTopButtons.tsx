@@ -94,7 +94,7 @@ const RightMenuTopButtons = (props: Props): JSX.Element => {
 			/>
 			<Button
 				className="action-button"
-				iconProps={{iconName: 'Add'}}
+				iconProps={{iconName: 'Share'}}
 				disabled={gameDetails?.status === GameStatus.Ended}
 				subtle={true}
 				tooltipProps={{text: 'Invite user', delayMs: 500}}

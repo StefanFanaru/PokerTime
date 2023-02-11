@@ -40,10 +40,7 @@ const CardDeck = (): JSX.Element => {
 	const {id: playerId} = useSelector((state: AppState) => state.playerDetails);
 
 	const dispatch = useDispatch();
-	const {setSelectedCardId, increaseCurrentHiddenCardsCount, decreaseCurrentHiddenCardsCount} = bindActionCreators(
-		currentRoundActionsCreators,
-		dispatch
-	);
+	const {setSelectedCardId, decreaseCurrentHiddenCardsCount} = bindActionCreators(currentRoundActionsCreators, dispatch);
 	const {setPlayingCards} = bindActionCreators(currentGameActionCreators, dispatch);
 
 	useEffect(() => {
@@ -185,7 +182,6 @@ const CardDeck = (): JSX.Element => {
 					gameId: gameDetails?.id
 				} as ICardSelectedEvent
 			});
-			increaseCurrentHiddenCardsCount();
 			setSelectedCardId(clickedCard.id);
 
 			return {

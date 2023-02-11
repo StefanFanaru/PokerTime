@@ -37,6 +37,6 @@ public class CardDeselectedEventHandler : IClientEventHandler<CardDeselectedEven
         await _repository.Query<PlayedCard>().Where(x => x.RoundId == payload.RoundId && x.PlayerId == playerId)
             .DeleteFromQueryAsync();
 
-        await _clientEventSender.SendToAllInRound(payload, payload.RoundId);
+        await _clientEventSender.SendToAllInRoundExceptCurrentPlayer(payload, payload.RoundId, playerId);
     }
 }

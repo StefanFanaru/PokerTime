@@ -47,7 +47,23 @@ namespace PokerTime.API.SignalR
             await Task.WhenAll(tasks);
         }
 
+        public async Task SendToAllInRoundExceptCurrentPlayer(IClientEvent clientEvent, string roundId, string playerId)
+        {
+            var roundData = await _repository.Query<GameRoundPlayer>()
+                .Where(r => r.RoundId == roundId)
+                .Where(x => x.PlayerId != playerId)
+                .Select(x => new
+                {
+                    x.Round.GameId, x.PlayerId
+                })
+                .ToListAsync();
+
+            var playerIds = roundData.Select(x => x.PlayerId).ToList();
+            await SendToPlayersAsync(clientEvent, playerIds, roundData.First().GameId);
+        }
+
         public async Task SendToAllInRound(IClientEvent clientEvent, string roundId)
+
         {
             var roundData = await _repository.Query<GameRoundPlayer>()
                 .Where(r => r.RoundId == roundId)
@@ -57,8 +73,8 @@ namespace PokerTime.API.SignalR
                 })
                 .ToListAsync();
 
-            var connections = _signalRConnection.GetUsersConnections(roundData.Select(x => x.PlayerId).ToList());
-            await SendToConnectionsAsync(clientEvent, connections, roundData.First().GameId);
+            var playerIds = roundData.Select(x => x.PlayerId).ToList();
+            await SendToPlayersAsync(clientEvent, playerIds, roundData.First().GameId);
         }
 
         public async Task SendToAllInGame(IClientEvent clientEvent, string gameId)
@@ -73,6 +89,12 @@ namespace PokerTime.API.SignalR
                 .ToListAsync();
 
             var connections = _signalRConnection.GetUsersConnections(usersInRound);
+            await SendToConnectionsAsync(clientEvent, connections, gameId);
+        }
+
+        private async Task SendToPlayersAsync(IClientEvent clientEvent, List<string> playerIds, string gameId)
+        {
+            var connections = _signalRConnection.GetUsersConnections(playerIds);
             await SendToConnectionsAsync(clientEvent, connections, gameId);
         }
 

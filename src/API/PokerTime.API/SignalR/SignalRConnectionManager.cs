@@ -109,6 +109,7 @@ namespace PokerTime.API.SignalR
         {
             return ConnectionMap.Where(x => x.Value.Any(y => usersIds.Contains(y.Key)))
                 .SelectMany(x => x.Value)
+                .Where(x => usersIds.Contains(x.Key))
                 .SelectMany(x => x.Value);
         }
     }

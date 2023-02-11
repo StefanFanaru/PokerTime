@@ -8,6 +8,7 @@ namespace PokerTime.Core.Abstractions
         Task SendToAll(IClientEvent clientEvent);
         Task SendToAllCoPlayers(IClientEvent clientEvent, string connectionId);
         Task SendToAllInRound(IClientEvent clientEvent, string roundId);
+        Task SendToAllInRoundExceptCurrentPlayer(IClientEvent clientEvent, string roundId, string playerId);
         Task SendToAllInGame(IClientEvent clientEvent, string gameId);
     }
 }
