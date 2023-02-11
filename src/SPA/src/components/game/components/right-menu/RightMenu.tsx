@@ -225,17 +225,21 @@ const RightMenu = (props: IProps): JSX.Element => {
 	}
 
 	async function onEditClick() {
+		setState(prevState => ({...prevState, isEditDisabled: true}));
 		const service = await SDK.getService<IWorkItemFormNavigationService>(
 			WorkItemTrackingServiceIds.WorkItemFormNavigationService
 		);
 
 		await service.openWorkItem(props.workItems.find(x => x.id === activeWorkItemId)!.id, false).then(() => {
-			sendSignalREvent({
-				type: ClientEventType.ShouldRefreshGame,
-				payload: {
-					gameId: gameDetails?.id!
-				} as IShouldRefreshGame
-			});
+			setState(prevState => ({...prevState, isEditDisabled: false}));
+			setTimeout(() => {
+				sendSignalREvent({
+					type: ClientEventType.ShouldRefreshGame,
+					payload: {
+						gameId: gameDetails?.id!
+					} as IShouldRefreshGame
+				});
+			}, 500);
 		});
 	}
 
