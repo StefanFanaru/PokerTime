@@ -85,8 +85,10 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 			}
 
 			if (gameDetails?.activeWorkItemId && !gameDetails?.isOwner) {
-				const workItem = props.workItems.find(item => item.id === gameDetails.activeWorkItemId)!;
-				workItem.isSelected = true;
+				const workItem = props.workItems.find(item => item.id === gameDetails.activeWorkItemId);
+				if (workItem) {
+					workItem.isSelected = true;
+				}
 			}
 
 			if (activeWorkItemId) {

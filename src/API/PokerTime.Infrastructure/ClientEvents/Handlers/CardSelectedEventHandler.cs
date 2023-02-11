@@ -23,12 +23,12 @@ public class CardSelectedEventHandler : IClientEventHandler<CardSelectedEvent>
 
     public async Task Handle(string playerId, CardSelectedEvent payload)
     {
-        var isGameEnded = await _repository.Query<GameRound>()
-            .Where(x => x.Id == payload.RoundId)
-            .Select(x => x.Game.Status == GameStatus.Ended)
-            .SingleAsync();
+        var isGameActive = await _repository.Query<GameRound>()
+            .Where(x => x.Id == payload.RoundId && x.Game.Status == GameStatus.Active)
+            .Where(x => x.Players.Any(p => p.PlayerId == playerId))
+            .AnyAsync();
 
-        if (isGameEnded)
+        if (!isGameActive)
         {
             return;
         }

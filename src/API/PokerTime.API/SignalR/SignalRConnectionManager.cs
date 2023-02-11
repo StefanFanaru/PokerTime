@@ -14,7 +14,11 @@ namespace PokerTime.API.SignalR
         {
             foreach (var (gameId, users) in ConnectionMap)
             {
-                return users.First(x => x.Value.Contains(connectionId)).Key;
+                var userId = users.FirstOrDefault(x => x.Value.Contains(connectionId)).Key;
+                if (userId != null)
+                {
+                    return userId;
+                }
             }
 
             throw new KeyNotFoundException($"ConnectionId {connectionId} not found");
@@ -41,11 +45,6 @@ namespace PokerTime.API.SignalR
                 return;
             }
 
-            if (gameConnections.Value.Count == 0)
-            {
-                ConnectionMap.TryRemove(gameConnections);
-            }
-
             var userConnections = gameConnections.Value.FirstOrDefault(x => x.Value.Contains(connectionId));
 
             lock (userConnections.Value)
@@ -56,6 +55,11 @@ namespace PokerTime.API.SignalR
             if (userConnections.Value.Count == 0)
             {
                 gameConnections.Value.Remove(userConnections.Key);
+            }
+
+            if (gameConnections.Value.Count == 0)
+            {
+                ConnectionMap.TryRemove(gameConnections);
             }
 
             Log.Debug($"Removed connection {connectionId}");

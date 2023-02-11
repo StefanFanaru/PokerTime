@@ -19,8 +19,8 @@ const PlayedCard = (props: IProps): JSX.Element => {
 	const {cardsWereFlipped} = useSelector((state: AppState) => state.currentRound);
 
 	return (
-		<div className={'played-card-wrapper noSelect' + (props.isAway ? 'away' : '')}>
-			<div className={'card-wrapper' + (props.content && cardsWereFlipped ? ' rotate' : '')}>
+		<div className={`played-card-wrapper noSelect${props.isAway ? 'away' : ''}`}>
+			<div className={`card-wrapper${props.content && cardsWereFlipped ? ' rotate' : ''}`}>
 				{props.isAway && (
 					<svg width="320" height="235" version="1.1" viewBox="0 0 320 235" xmlns="http://www.w3.org/2000/svg">
 						<path
@@ -39,7 +39,7 @@ const PlayedCard = (props: IProps): JSX.Element => {
 			<Tooltip delayMs={500} text={props.userName}>
 				<img
 					className={playerId === props.playerId ? 'is-current-player' : ''}
-					src={'data:image/png;base64, ' + props.avatarBase64}
+					src={`data:image/png;base64, ${props.avatarBase64}`}
 					alt=""
 				/>
 			</Tooltip>

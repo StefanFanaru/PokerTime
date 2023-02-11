@@ -25,7 +25,7 @@ export async function startSignalRConnection(token: string, gameId: string): Pro
 
 			connection!.on('client-events', message => {
 				const parsedMessage = JSON.parse(message) as IClientEvent;
-				console.log('Received ClientEvent', parsedMessage.type, JSON.parse(message).innerEventJson);
+				// console.log('Received ClientEvent', parsedMessage.type, JSON.parse(message).innerEventJson);
 				clientEventsMessages.notify(parsedMessage.innerEventJson, `${parsedMessage.type}-${parsedMessage.gameId}`);
 			});
 		})
@@ -63,7 +63,7 @@ async function registerConnection(gameId: string): Promise<void> {
 	return connection!
 		.invoke('RegisterConnection', gameId)
 		.then(connectionId => {
-			console.log(`Connected to client events Hub. Connection Id: ${connectionId}`);
+			console.log(`Connected to websocket. Connection Id: ${connectionId}`);
 		})
 		.catch(error => console.error(error));
 }
@@ -77,7 +77,7 @@ export async function sendSignalREvent<TPayload>(message: SignalREvent<TPayload>
 	if (isGameEnded) {
 		return;
 	}
-	console.log('Send ClientEvent', message);
+	// console.log('Send ClientEvent', message);
 	await connection.invoke('ReceivedEvent', JSON.stringify({type: message.type, payload: JSON.stringify(message.payload)}));
 }
 

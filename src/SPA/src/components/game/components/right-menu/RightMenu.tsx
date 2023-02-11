@@ -171,8 +171,17 @@ const RightMenu = (props: IProps): JSX.Element => {
 	};
 
 	function onPreviousClick() {
-		const previousIndex = props.workItems.findIndex(x => x.id === activeWorkItemId) - 1;
-		setActiveWorkItemId(props.workItems[previousIndex].id);
+		const workItemsReversed = [...props.workItems].reverse();
+		const currentIndex = workItemsReversed.findIndex(x => x.id === activeWorkItemId);
+		const previousIndex = workItemsReversed.findIndex(
+			(x, i) => x.id !== activeWorkItemId && x.points === undefined && i > currentIndex
+		);
+		if (previousIndex === -1) {
+			const previousIndex = props.workItems.findIndex(x => x.id === activeWorkItemId) - 1;
+			setActiveWorkItemId(props.workItems[previousIndex].id);
+		} else {
+			setActiveWorkItemId(workItemsReversed[previousIndex].id);
+		}
 		setState(prevState => ({
 			...prevState,
 			isPreviousDisabled: previousIndex === 0,
@@ -182,7 +191,12 @@ const RightMenu = (props: IProps): JSX.Element => {
 	}
 
 	function onNextClick() {
-		const nextIndex = props.workItems.findIndex(x => x.id === activeWorkItemId) + 1;
+		const currentIndex = props.workItems.findIndex(x => x.id === activeWorkItemId);
+		let nextIndex = props.workItems.findIndex((x, i) => x.id !== activeWorkItemId && x.points === undefined && i > currentIndex);
+
+		if (nextIndex === -1) {
+			nextIndex = props.workItems.findIndex(x => x.id === activeWorkItemId) + 1;
+		}
 		setActiveWorkItemId(props.workItems[nextIndex].id);
 		const shouldDisable = nextIndex === props.workItems.length - 1;
 		setState(prevState => ({

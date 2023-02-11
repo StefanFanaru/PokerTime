@@ -25,9 +25,6 @@ function findEnvironmentalVariables(environment) {
     prev[`process.env.${next}`] = JSON.stringify(fileEnv[next]);
     return prev;
   }, {});
-
-  console.log(vars);
-
   return vars;
 }
 

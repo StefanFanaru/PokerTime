@@ -25,6 +25,7 @@ import {PauseToggledEvent} from '../../types/client-events/pause-toggled-event';
 import {GameEndedEvent} from '../../types/client-events/game-ended';
 import GameEndedDialog from '../dialogs/game-ended/GameEndedDialog';
 import {IShouldRefreshGame} from '../../types/client-events/should-refresh-game';
+import {WorkItemType} from '../../types/work-items/work-item-type';
 
 interface State {
 	workItemsDetailed: IWorkItemDetails[];
@@ -73,6 +74,10 @@ const Game = (): JSX.Element => {
 		if (gameRoundInsertResponse) {
 			setRoundId(gameRoundInsertResponse.roundId);
 			setActivePlayersIds(gameRoundInsertResponse.activePlayersIds);
+			if (!gameRoundInsertResponse.cardsWereFlipped) {
+				setTimeout(() => setCardsWereFlipped(gameRoundInsertResponse.cardsWereFlipped), 100);
+				return;
+			}
 			setCardsWereFlipped(gameRoundInsertResponse.cardsWereFlipped);
 		}
 	}, [gameRoundInsertResponse]);
@@ -252,7 +257,7 @@ const Game = (): JSX.Element => {
 		const workItemsData = await getClient(WorkItemTrackingRestClient).getWorkItemsBatch(
 			{
 				ids: iterationIds,
-				fields: ['System.Tags', 'System.Description'],
+				fields: ['System.Tags', 'System.Description', 'Microsoft.VSTS.TCM.ReproSteps'],
 				errorPolicy: WorkItemErrorPolicy.Fail,
 				$expand: WorkItemExpand.None,
 				asOf: new Date()
@@ -260,7 +265,7 @@ const Game = (): JSX.Element => {
 			gameDetails?.projectId
 		);
 
-		const workItemsDetailed = workItemLists.map(workItem => {
+		let workItemsDetailed = workItemLists.map(workItem => {
 			const workItemDataDetails = workItemsData.find(y => y.id === workItem.id)!;
 			return {
 				id: workItem.id,
@@ -268,9 +273,15 @@ const Game = (): JSX.Element => {
 				type: workItem.type,
 				points: workItem.points,
 				tags: workItemDataDetails.fields['System.Tags']?.split(';'),
-				description: workItemDataDetails.fields['System.Description']
+				description:
+					workItem.type == WorkItemType.UserStory
+						? workItemDataDetails.fields['System.Description']
+						: workItemDataDetails.fields['Microsoft.VSTS.TCM.ReproSteps']
 			} as IWorkItemDetails;
 		});
+
+		// order wirkItemsDetailed by points
+		workItemsDetailed = workItemsDetailed.sort((a, b) => (a.points ?? 0) - (b.points ?? 0));
 
 		setState(prevState => ({...prevState, workItemsDetailed}));
 

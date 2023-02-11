@@ -139,17 +139,23 @@ const GameInfoCards = (): JSX.Element => {
 				<div className="title">Commitment</div>
 				<div
 					className={`value ${
-						gameInfoCardsState.commitment <= gameInfoCardsState.velocity * 0.85
-							? 'green'
-							: gameInfoCardsState.commitment <= gameInfoCardsState.velocity
-							? 'orange'
-							: 'red'
+						gameInfoCardsState.velocity
+							? gameInfoCardsState.commitment <= gameInfoCardsState.velocity * 0.85
+								? 'green'
+								: gameInfoCardsState.commitment <= gameInfoCardsState.velocity
+								? 'orange'
+								: 'red'
+							: ''
 					}`}>
 					{gameInfoCardsState.commitment}
 				</div>
 			</div>
 			{gameInfoCardsState.velocity != undefined && simpleCard('Velocity', gameInfoCardsState.velocity)}
-			{simpleCard('Played rounds', `${gameInfoCardsState.playedRoundsCount}/${gameInfoCardsState.totalRoundsCount}`)}
+			{simpleCard(
+				'Played rounds',
+				`${gameInfoCardsState.playedRoundsCount}/${gameInfoCardsState.totalRoundsCount}`,
+				`Remaining rounds: ${gameInfoCardsState.totalRoundsCount - gameInfoCardsState.playedRoundsCount}`
+			)}
 			{simpleCard(
 				gameDetails?.status === GameStatus.Ended ? 'Time played' : 'Time playing',
 				state.timePlaying,

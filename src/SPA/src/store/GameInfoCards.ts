@@ -109,7 +109,6 @@ export const actionCreators = {
 export const reducer = (state = initialState, action: ProjectInfoActionTypes): GameInfoCardsState => {
 	switch (action.type) {
 		case SET_COMMITMENT:
-			console.log('SET_COMMITMENT', action.payload);
 			return {...state, commitment: action.payload};
 		case SET_VELOCITY:
 			return {...state, velocity: action.payload};

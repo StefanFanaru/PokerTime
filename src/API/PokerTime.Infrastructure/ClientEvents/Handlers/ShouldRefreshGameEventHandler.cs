@@ -23,16 +23,23 @@ public class ShouldRefreshGameEventHandler : IClientEventHandler<ShouldRefreshGa
 
     public async Task Handle(string playerId, ShouldRefreshGameEvent payload)
     {
-        var gameFound = await _repository.Query<Game>()
-            .Where(x => x.Id == payload.GameId)
-            .Select(x => x.Status == GameStatus.Ended && x.OwnerId == playerId)
-            .AnyAsync();
+        var game = await _repository.Query<Game>()
+            .Where(x => x.Id == payload.GameId && x.Status != GameStatus.Ended)
+            .Where(x => x.OwnerId == playerId || x.Rounds.Any(r => r.Players.Any(p => p.PlayerId == playerId)))
+            .Select(x => new { x.OwnerId })
+            .FirstOrDefaultAsync();
 
-        if (!gameFound)
+        if (game == null)
         {
             return;
         }
 
-        await _clientEventSender.SendToAllInGame(payload, payload.GameId);
+        if (game.OwnerId == playerId)
+        {
+            await _clientEventSender.SendToAllInGame(payload, payload.GameId);
+            return;
+        }
+
+        await _clientEventSender.SendToUserAsync(payload, playerId, payload.GameId);
     }
 }

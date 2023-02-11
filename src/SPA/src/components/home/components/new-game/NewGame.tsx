@@ -30,6 +30,7 @@ interface State {
 	pendingSelectionIterationId?: string;
 	isTeamWarningVisible?: boolean;
 	pendingSelectionTeamId?: string;
+	isAutomaticTitle?: boolean;
 }
 
 interface Props {
@@ -77,8 +78,13 @@ const NewGame = (props: Props): JSX.Element => {
 		props.onSubmit(props.gameUnderEdit!.id, state.gameTitle!, state.selectedTeam!, state.selectedIteration!, state.velocity);
 	}, [updateResponse]);
 
-	function onGameTitleChange(newValue: string) {
-		setState(prevState => ({...prevState, gameTitle: newValue}));
+	function onGameTitleChange(newValue: string, isAutomaticTitle = false) {
+		setState(prevState => {
+			if (!prevState.isAutomaticTitle && prevState.gameTitle && isAutomaticTitle) {
+				return prevState;
+			}
+			return {...prevState, gameTitle: newValue, isAutomaticTitle: isAutomaticTitle};
+		});
 	}
 
 	function onIterationSelect(item: IListBoxItem) {
@@ -178,8 +184,8 @@ const NewGame = (props: Props): JSX.Element => {
 			return;
 		}
 
-		if (!state.gameTitle && state.selectedIteration) {
-			onGameTitleChange(`${state.selectedIteration.name} - ${projectDetails?.name}`);
+		if (state.selectedIteration) {
+			onGameTitleChange(state.selectedIteration.name, true);
 		}
 	}, [state.selectedIteration]);
 
@@ -299,16 +305,6 @@ const NewGame = (props: Props): JSX.Element => {
 				]}>
 				<div className="new-game-panel">
 					<div className="panel-group">
-						<label>Game title</label>
-						<TextField
-							className="input-element"
-							value={state.gameTitle}
-							onChange={(_, newValue) => onGameTitleChange(newValue)}
-							placeholder="Game title"
-							required={true}
-						/>
-					</div>
-					<div className="panel-group">
 						<label>Team</label>
 						<Dropdown
 							ariaLabel="Team"
@@ -334,6 +330,16 @@ const NewGame = (props: Props): JSX.Element => {
 							onSelect={(_, item) => onIterationSelect(item)}
 							inputId="iteration"
 							selection={state.iterationSelection}
+						/>
+					</div>
+					<div className="panel-group">
+						<label>Game title</label>
+						<TextField
+							className="input-element"
+							value={state.gameTitle}
+							onChange={(_, newValue) => onGameTitleChange(newValue)}
+							placeholder="Game title"
+							required={true}
 						/>
 					</div>
 					<div className="panel-group">
