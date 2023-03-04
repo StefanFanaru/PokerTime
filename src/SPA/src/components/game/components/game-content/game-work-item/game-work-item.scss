@@ -103,6 +103,11 @@
 		a {
 			color: $communication-shade-10;
 		}
+
+
+		.content > div {
+			padding-bottom: 1rem;
+		}
 	}
 
 	.true-mobile & {

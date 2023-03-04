@@ -30,7 +30,6 @@ const GameWorkItem = (): JSX.Element => {
 			activeWorkItem.description = replaceAll(activeWorkItem.description, '<pre', '<div');
 			activeWorkItem.description = replaceAll(activeWorkItem.description, '<img', '<img title="Click to view full size"');
 			activeWorkItem.description = replaceAll(activeWorkItem.description, '<a', '<a target="_blank"');
-			activeWorkItem.description += '<br>';
 		}
 
 		setState(prevState => ({...prevState, workItem: activeWorkItem}));

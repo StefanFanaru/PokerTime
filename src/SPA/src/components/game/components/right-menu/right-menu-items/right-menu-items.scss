@@ -11,12 +11,17 @@
 
 	&.full {
 		height: 100%;
+
+		.body {
+			max-height: calc(100% - 90px);
+		}
 	}
 
 	.row {
 		display: flex;
 		width: 100%;
 		padding: 10px 20px 10px 0;
+
 
 		&.active {
 			font-weight: bold;
