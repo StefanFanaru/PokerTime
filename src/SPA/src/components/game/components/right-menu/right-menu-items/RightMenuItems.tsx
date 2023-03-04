@@ -41,7 +41,7 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 	);
 
 	const {activeWorkItemId} = useSelector((state: AppState) => state.currentRound);
-	const {gameDetails} = useSelector((state: AppState) => state.currentGame);
+	const {gameDetails, shouldRefreshGame} = useSelector((state: AppState) => state.currentGame);
 
 	useEffect(() => {
 		if (!gameDetails?.id) {
@@ -113,7 +113,7 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 			return;
 		}
 
-		if (props.isAdmin) {
+		if (props.isAdmin && !shouldRefreshGame) {
 			sendSignalREvent({
 				type: ClientEventType.WorkItemSelected,
 				payload: {
@@ -136,7 +136,7 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 		state.workItems.forEach(workItem => (workItem.isActive = false));
 		workItem.isActive = true;
 
-		setActiveWorkItemStoryPoints(workItem.points);
+		setActiveWorkItemStoryPoints(workItem.points ? Math.round(workItem.points * 100) / 100 : workItem.points);
 
 		setState(prevState => ({...prevState, workItems: [...state.workItems]}));
 	}, [activeWorkItemId]);

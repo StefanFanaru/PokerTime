@@ -7,5 +7,5 @@ public class GameRoundSetStoryPointsCommand : UserBasedCommand<Unit>
 {
     [Required] public string RoundId { get; set; }
     [Required] public string GameId { get; set; }
-    [Required] public int SubmittedStoryPoints { get; set; }
+    [Required] public float SubmittedStoryPoints { get; set; }
 }

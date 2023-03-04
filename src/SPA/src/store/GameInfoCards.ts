@@ -109,9 +109,9 @@ export const actionCreators = {
 export const reducer = (state = initialState, action: ProjectInfoActionTypes): GameInfoCardsState => {
 	switch (action.type) {
 		case SET_COMMITMENT:
-			return {...state, commitment: action.payload};
+			return {...state, commitment: Math.round(action.payload * 100) / 100};
 		case SET_VELOCITY:
-			return {...state, velocity: action.payload};
+			return {...state, velocity: Math.round(action.payload * 100) / 100};
 		case SET_PLAYED_ROUNDS_COUNT:
 			return {...state, playedRoundsCount: action.payload};
 		case SET_TOTAL_ROUNDS_COUNT:

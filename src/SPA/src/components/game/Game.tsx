@@ -227,10 +227,16 @@ const Game = (): JSX.Element => {
 		if (iterationIds.length === 0) {
 			return;
 		}
-		const workItemsListData = await getClient(WorkItemTrackingRestClient).getWorkItemsBatch(
+
+		let workItemsListData = await getClient(WorkItemTrackingRestClient).getWorkItemsBatch(
 			{
 				ids: iterationIds,
-				fields: ['Microsoft.VSTS.Scheduling.StoryPoints', 'System.Title', 'System.WorkItemType'],
+				fields: [
+					'Microsoft.VSTS.Scheduling.StoryPoints',
+					'System.Title',
+					'System.WorkItemType',
+					'Microsoft.VSTS.Common.StackRank'
+				],
 				errorPolicy: WorkItemErrorPolicy.Fail,
 				$expand: WorkItemExpand.None,
 				asOf: new Date()
@@ -238,14 +244,24 @@ const Game = (): JSX.Element => {
 			gameDetails?.projectId
 		);
 
+		// order by stack rank
+		workItemsListData = workItemsListData.sort((a, b) => {
+			const aStackRank = a.fields['Microsoft.VSTS.Common.StackRank'];
+			const bStackRank = b.fields['Microsoft.VSTS.Common.StackRank'];
+			if (aStackRank && bStackRank) {
+				return aStackRank - bStackRank;
+			}
+			return 0;
+		});
 		setTotalRoundsCount(workItemsListData.length);
 
 		const workItemLists = workItemsListData.map(workItem => {
+			const points = workItem.fields['Microsoft.VSTS.Scheduling.StoryPoints'];
 			return {
 				id: workItem.id,
 				title: workItem.fields['System.Title'],
 				type: workItem.fields['System.WorkItemType'],
-				points: workItem.fields['Microsoft.VSTS.Scheduling.StoryPoints'],
+				points: points ? Math.round(points * 100) / 100 : points,
 				isActive: false
 			} as IListWorkItem;
 		});

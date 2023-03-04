@@ -49,7 +49,10 @@ const GamePointsCard = (): JSX.Element => {
 		}
 
 		const averagePoints = computeAveragePoints(playedCards);
-		setState(prevState => ({...prevState, averagePoints}));
+		setState(prevState => ({
+			...prevState,
+			averagePoints: averagePoints ? Math.round(averagePoints * 100) / 100 : averagePoints
+		}));
 	}, [playedCards]);
 
 	useEffect(() => {
@@ -67,13 +70,14 @@ const GamePointsCard = (): JSX.Element => {
 		if (state.pointsInputValue === undefined) {
 			return;
 		}
+		const points = Math.round(state.pointsInputValue * 100) / 100;
 		const workRestClient = getClient(WorkItemTrackingRestClient);
 		await workRestClient.updateWorkItem(
 			[
 				{
 					op: 'add',
 					path: '/fields/Microsoft.VSTS.Scheduling.StoryPoints',
-					value: state.pointsInputValue
+					value: points
 				}
 			],
 			activeWorkItem?.id!,
@@ -82,12 +86,12 @@ const GamePointsCard = (): JSX.Element => {
 		if (activeWorkItemStoryPoints == undefined || activeWorkItemStoryPoints == null) {
 			setPlayedRoundsCount(playedRoundsCount + 1);
 		}
-		setActiveWorkItemStoryPoints(state.pointsInputValue);
+		setActiveWorkItemStoryPoints(points);
 		patchStoryPoints({
 			data: {
 				roundId: roundId!,
 				gameId: gameDetails?.id!,
-				submittedStoryPoints: state.pointsInputValue
+				submittedStoryPoints: points
 			}
 		});
 	}

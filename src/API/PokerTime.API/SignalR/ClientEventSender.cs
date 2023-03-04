@@ -58,6 +58,11 @@ namespace PokerTime.API.SignalR
                 })
                 .ToListAsync();
 
+            if (!roundData.Any())
+            {
+                return;
+            }
+
             var playerIds = roundData.Select(x => x.PlayerId).ToList();
             await SendToPlayersAsync(clientEvent, playerIds, roundData.First().GameId);
         }

@@ -77,7 +77,7 @@ export async function sendSignalREvent<TPayload>(message: SignalREvent<TPayload>
 	if (isGameEnded) {
 		return;
 	}
-	// console.log('Send ClientEvent', message);
+	console.log('Send ClientEvent', message);
 	await connection.invoke('ReceivedEvent', JSON.stringify({type: message.type, payload: JSON.stringify(message.payload)}));
 }
 

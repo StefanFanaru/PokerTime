@@ -58,7 +58,6 @@ const PlayedCards = (): JSX.Element => {
 	useEffect(() => {
 		if (playedCardsResponse?.data) {
 			addPlayersCards(playedCardsResponse.data);
-			console.log('playedCardsResponse', playedCardsResponse.data.length);
 			setCurrentHiddenCardsCount(playedCardsResponse.data.length);
 			setPlayersThatPlayedCards(playedCardsResponse.data.map(x => x.playerId));
 		}
@@ -156,7 +155,6 @@ const PlayedCards = (): JSX.Element => {
 			}
 			addPlayerThatPlayedCard(event.playerId);
 			await insertNewCard(event);
-			console.log('card selected', event);
 			increaseCurrentHiddenCardsCount();
 		}, ClientEventType.CardSelected);
 

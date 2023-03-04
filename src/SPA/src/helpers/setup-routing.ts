@@ -1,20 +1,23 @@
 ﻿import * as SDK from 'azure-devops-extension-sdk';
-import { CommonServiceIds, IHostNavigationService } from 'azure-devops-extension-api';
+import {CommonServiceIds, IHostNavigationService} from 'azure-devops-extension-api';
 import * as H from 'history';
-import { stopSignalRConnection } from '../services/signalr';
+import {stopSignalRConnection} from '../services/signalr';
 
 export async function setupRouting(history: H.History) {
+	const hostNavigationService = await SDK.getService<IHostNavigationService>(CommonServiceIds.HostNavigationService);
+
 	history.listen(async location => {
 		hostNavigationService.setHash(location.pathname);
 	});
 
-	const hostNavigationService = await SDK.getService<IHostNavigationService>(CommonServiceIds.HostNavigationService);
-	const routeHash = await hostNavigationService.getHash();
-
+	let routeHash = await hostNavigationService.getHash();
 	if (routeHash) {
 		if (routeHash.includes('error')) {
 			history.replace('/');
 		} else {
+			if (routeHash.includes('%')) {
+				routeHash = decodeURIComponent(routeHash).replace('=', '');
+			}
 			history.replace(routeHash.substring(1));
 		}
 	}
