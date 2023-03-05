@@ -37,13 +37,13 @@ Or send me an email here [stefan.fanaru@outlook.com](mailto:stefan.fanaru@outloo
 
 - Dashboard with a list of all games that are currently in progress or have been completed
 
-![alt text](https://generalacc.blob.core.windows.net/cdn/2023-03-05%2014_16_06-PokerTime%20Dev%20-%20Boards.png)
+![alt text](https://generalacc.blob.core.windows.net/cdn/2023-03-05%2015_07_49-PokerTime%20Dev%20-%20Boards.png)
 
 <br/>
 
 - A voting game can be created by any team member, the creator can also stop the game at any time
 
-![alt text](https://generalacc.blob.core.windows.net/cdn/2023-03-05%2014_18_35-PokerTime%20Dev%20-%20Boards.png)
+![alt text](https://generalacc.blob.core.windows.net/cdn/2023-03-05%2015_08_04-PokerTime%20Dev%20-%20Boards.png)
 
 ## Other features
 
