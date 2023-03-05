@@ -19,15 +19,27 @@ public class PlayingCardsQueryHandler : IRequestHandler<PlayingCardsQuery, IOper
     public async Task<IOperationResult<PlayingCardDto[]>> Handle(PlayingCardsQuery request, CancellationToken cancellationToken)
     {
         var cardDtos = await _repository.Query<PlayingCard>()
+            .Where(x => x.OrganizationId == request.User.OrganizationId || x.IsDefault)
+            .Where(x => !x.IsDeleted && !x.IsLegacy)
             .OrderBy(x => x.Index)
-            .Select(x => new PlayingCardDto
+            .Select(x => new
             {
-                Id = x.Id,
-                Content = x.Content,
-                Color = x.Color
+                IsOwned = x.OrganizationId == request.User.OrganizationId,
+                Card = new PlayingCardDto
+                {
+                    Id = x.Id,
+                    Content = x.Content,
+                    Color = x.Color
+                }
             })
             .ToArrayAsync(cancellationToken);
 
-        return ResultBuilder.Ok(cardDtos);
+        if (cardDtos.Any(x => x.IsOwned))
+        {
+            var result = cardDtos.Where(x => x.IsOwned).Select(x => x.Card).ToArray();
+            return ResultBuilder.Ok(result);
+        }
+
+        return ResultBuilder.Ok(cardDtos.Select(x => x.Card).ToArray());
     }
 }

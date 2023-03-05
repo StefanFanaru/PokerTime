@@ -13,6 +13,7 @@ using PokerTime.API.Asp.Auth;
 using PokerTime.API.Common;
 using PokerTime.API.SignalR;
 using PokerTime.Core.Abstractions;
+using PokerTime.Infrastructure.Commands.PlayingCards;
 using PokerTime.Infrastructure.Common;
 using PokerTime.Infrastructure.Common.UserInfo;
 using PokerTime.Infrastructure.Data;
@@ -32,6 +33,7 @@ public static class ApiConfiguration
         services.AddScoped<UserConnectService>();
         services.AddScoped<IAuthorizationHandler, AllowedInProjectAuthorizationHandler>();
         services.AddScoped<IClientEventSender, ClientEventSender>();
+        services.AddScoped<PlayingCardsUpdateIndexesService>();
         services.AddSingleton<ISignalRConnectionManager, SignalRConnectionManager>();
 
         services.AddScopedImplementationsOf<IDataMigration>(typeof(InfrastructureAssembly).Assembly);

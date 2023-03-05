@@ -1,8 +1,8 @@
-﻿using PokerTime.Infrastructure.CQRS.Operations;
+﻿using PokerTime.Infrastructure.CQRS;
 
 namespace PokerTime.Infrastructure.Queries.Cards;
 
-public class PlayingCardsQuery : IRequest<IOperationResult<PlayingCardDto[]>>
+public class PlayingCardsQuery : UserBasedQuery<PlayingCardDto[]>
 {
 }
 

@@ -17,6 +17,7 @@ import {actionCreators as currentGameActionCreators} from '../../../../../store/
 import {ICardDeselectedEvent} from '../../../../../types/client-events/card-deselected';
 import {GameStatus} from '../../../../../types/game-status';
 import configureStore from '../../../../../store/Store';
+import {actionCreators as gameInfoCardsActionCreators} from '../../../../../store/GameInfoCards';
 
 interface State {
 	cards: IPlayingCard[];
@@ -30,18 +31,27 @@ const CardDeck = (): JSX.Element => {
 	});
 
 	const [scrollBarRef, setScrollBarRef] = useState<PerfectScrollbar | null>();
-	const [{data: playingCardsResponse}] = useAxios<IPlayingCardResponse[]>({
-		url: '/api/cards/list'
-	});
+	const [{data: playingCardsResponse}, getPlayingCards] = useAxios<IPlayingCardResponse[]>(
+		{
+			url: '/api/cards/list'
+		},
+		{manual: true}
+	);
 	const [{response: playedCardResponse}, getPlayedCard] = useAxios<{cardId: string}>({}, {manual: true});
 
 	const {roundId} = useSelector((state: AppState) => state.currentRound);
 	const {gameDetails} = useSelector((state: AppState) => state.currentGame);
 	const {id: playerId} = useSelector((state: AppState) => state.playerDetails);
+	const {playersThatPlayedCards} = useSelector((state: AppState) => state.gameInfoCards);
 
 	const dispatch = useDispatch();
 	const {setSelectedCardId, decreaseCurrentHiddenCardsCount} = bindActionCreators(currentRoundActionsCreators, dispatch);
 	const {setPlayingCards} = bindActionCreators(currentGameActionCreators, dispatch);
+	const {setPlayersThatPlayedCards} = bindActionCreators(gameInfoCardsActionCreators, dispatch);
+
+	useEffect(() => {
+		getPlayingCards();
+	}, []);
 
 	useEffect(() => {
 		if (!roundId || !playedCardResponse) {
@@ -164,6 +174,7 @@ const CardDeck = (): JSX.Element => {
 							roundId: roundId
 						} as ICardDeselectedEvent
 					});
+					setPlayersThatPlayedCards(playersThatPlayedCards.filter(x => x !== playerId));
 					decreaseCurrentHiddenCardsCount();
 					setSelectedCardId(undefined);
 					return {

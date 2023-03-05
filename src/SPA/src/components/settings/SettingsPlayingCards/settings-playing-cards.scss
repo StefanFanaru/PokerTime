@@ -1,0 +1,96 @@
+﻿@import 'src/styles/varibles';
+@import 'src/styles/mixins';
+
+.settings-playing-cards-wrapper {
+	.drag-drop-list-container {
+		margin-top: 1.5rem;
+		margin-bottom: 1rem;
+		display: flex;
+		align-items: flex-end;
+		padding-bottom: 1.5vh;
+		max-width: calc(100vw - 2rem - 400px);
+		overflow: auto;
+		width: unset;
+
+		@include phone {
+			width: unset;
+			align-items: flex-end;
+			max-width: calc(100vw - 2rem);
+			height: calc(10.1vh + 4.5vh) !important;
+			padding-bottom: 1.5vh;
+		}
+
+		.playing-card-wrapper {
+			margin-right: 1rem;
+		}
+	}
+
+
+}
+
+.dialog-content {
+	.panel-group {
+		margin-top: 0rem;
+	}
+
+	.panel-group {
+		label {
+			font-size: 1rem !important;
+			font-weight: normal !important;
+		}
+	}
+
+	.card-color {
+		margin-top: 1rem;
+		display: block;
+		cursor: pointer;
+	}
+
+	input[type="color"] {
+		-webkit-appearance: none;
+		border: none;
+		width: 100%;
+		height: 30px;
+	}
+
+	input[type="color"]::-webkit-color-swatch-wrapper {
+		padding: 0;
+	}
+
+	input[type="color"]::-webkit-color-swatch {
+		border: none;
+	}
+
+	.inputs {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+
+		.panel-group {
+			width: 45%;
+		}
+	}
+
+	.bolt-textfield-icon {
+		display: none;
+	}
+
+	.preview {
+		margin-top: 20px;
+		margin-bottom: 14px;
+		display: flex;
+		justify-content: center;
+	}
+
+	.playing-card-wrapper {
+		width: 120px;
+		height: 180px;
+		max-height: unset;
+		max-width: unset;
+
+		.card-content {
+			font-size: 50px;
+		}
+	}
+}
+

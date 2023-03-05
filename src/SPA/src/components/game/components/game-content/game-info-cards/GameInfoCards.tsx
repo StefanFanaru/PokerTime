@@ -135,21 +135,23 @@ const GameInfoCards = (): JSX.Element => {
 
 	return (
 		<div className="game-info-cards-wrapper">
-			<div className="card default-cursor">
-				<div className="title">Commitment</div>
-				<div
-					className={`value ${
-						gameInfoCardsState.velocity
-							? gameInfoCardsState.commitment <= gameInfoCardsState.velocity * 0.85
-								? 'green'
-								: gameInfoCardsState.commitment <= gameInfoCardsState.velocity
-								? 'orange'
-								: 'red'
-							: ''
-					}`}>
-					{gameInfoCardsState.commitment}
+			<Tooltip delayMs={500} text={`Difference: ${gameInfoCardsState.velocity - gameInfoCardsState.commitment}`}>
+				<div className="card default-cursor">
+					<div className="title">Commitment</div>
+					<div
+						className={`value ${
+							gameInfoCardsState.velocity
+								? gameInfoCardsState.commitment <= gameInfoCardsState.velocity * 0.85
+									? 'green'
+									: gameInfoCardsState.commitment <= gameInfoCardsState.velocity
+									? 'orange'
+									: 'red'
+								: ''
+						}`}>
+						{gameInfoCardsState.commitment}
+					</div>
 				</div>
-			</div>
+			</Tooltip>
 			{gameInfoCardsState.velocity != undefined && simpleCard('Velocity', gameInfoCardsState.velocity)}
 			{simpleCard(
 				'Played rounds',

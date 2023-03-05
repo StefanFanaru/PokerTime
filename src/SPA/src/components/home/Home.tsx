@@ -1,22 +1,23 @@
 import './home.scss';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { Header } from 'azure-devops-ui/Header';
-import { Page } from 'azure-devops-ui/Page';
-import { IProjectInfo } from 'azure-devops-extension-api';
+import {useEffect, useState} from 'react';
+import {Header} from 'azure-devops-ui/Header';
+import {Page} from 'azure-devops-ui/Page';
+import {IProjectInfo} from 'azure-devops-extension-api';
 import NewGame from './components/new-game/NewGame';
 import GamesList from './components/games-list/GamesList';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import FullScreenService from '../../services/fullScreenService';
-import { WebApiTeam } from 'azure-devops-extension-api/Core';
-import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
+import {WebApiTeam} from 'azure-devops-extension-api/Core';
+import {TeamSettingsIteration} from 'azure-devops-extension-api/Work';
 import Welcome from './components/welcome/Welcome';
 import useAxios from 'axios-hooks';
-import { IGameListResponse, IGameListResponseItem } from '../../types/game-list-response';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../store';
-import { GameStatus } from '../../types/game-status';
-import { IGamePanelItem } from '../../types/game-panel-item';
+import {IGameListResponse, IGameListResponseItem} from '../../types/game-list-response';
+import {useSelector} from 'react-redux';
+import {AppState} from '../../store';
+import {GameStatus} from '../../types/game-status';
+import {IGamePanelItem} from '../../types/game-panel-item';
+import {useHistory} from 'react-router-dom';
 
 interface State {
 	panelShown: boolean;
@@ -32,17 +33,18 @@ const Home = (): JSX.Element => {
 		panelShown: false,
 		isFullScreen: FullScreenService.isFullScreen
 	});
+	const history = useHistory();
 
-	const { details: projectDetails } = useSelector((state: AppState) => state.projectInfo);
+	const {details: projectDetails} = useSelector((state: AppState) => state.projectInfo);
 
-	const [{ data, loading }, getGamesList] = useAxios<IGameListResponse>(
+	const [{data, loading}, getGamesList] = useAxios<IGameListResponse>(
 		{
 			url: '/api/game/list',
 			params: {
 				projectId: projectDetails?.id
 			}
 		},
-		{ manual: true }
+		{manual: true}
 	);
 
 	useEffect(() => {
@@ -55,7 +57,7 @@ const Home = (): JSX.Element => {
 		if (!data) {
 			return;
 		}
-		setState(prevState => ({ ...prevState, activeGames: data.active, endedGames: data.ended }));
+		setState(prevState => ({...prevState, activeGames: data.active, endedGames: data.ended}));
 	}, [data]);
 
 	function togglePanel(isShown: boolean): void {
@@ -120,23 +122,23 @@ const Home = (): JSX.Element => {
 	}
 
 	function onGameEdit(gameUnderEdit: IGamePanelItem) {
-		setState(prevState => ({ ...prevState, gameUnderEdit, panelShown: true }));
+		setState(prevState => ({...prevState, gameUnderEdit, panelShown: true}));
 	}
 
-	function onAllGamesDeleted(areActiveGames: boolean = false) {
+	function onAllGamesDeleted(areActiveGames = false) {
 		if (areActiveGames && state.activeGames?.length) {
-			setState(prevState => ({ ...prevState, activeGames: [] }));
+			setState(prevState => ({...prevState, activeGames: []}));
 			return;
 		}
 
 		if (state.endedGames?.length) {
-			setState(prevState => ({ ...prevState, endedGames: [] }));
+			setState(prevState => ({...prevState, endedGames: []}));
 		}
 	}
 
 	function onFullScreenToggle() {
 		FullScreenService.toggle();
-		setState(prevState => ({ ...prevState, isFullScreen: FullScreenService.isFullScreen }));
+		setState(prevState => ({...prevState, isFullScreen: FullScreenService.isFullScreen}));
 	}
 
 	return (
@@ -145,7 +147,15 @@ const Home = (): JSX.Element => {
 				title={state.project?.name}
 				commandBarItems={[
 					{
-						id: 'panel-button',
+						id: 'panel-button1',
+						text: 'Settings',
+						iconProps: {
+							iconName: 'Settings'
+						},
+						onActivate: () => history.push('/settings')
+					},
+					{
+						id: 'panel-button2',
 						isPrimary: true,
 						text: 'New game',
 						iconProps: {
@@ -154,8 +164,12 @@ const Home = (): JSX.Element => {
 						onActivate: () => togglePanel(true)
 					},
 					{
-						id: 'panel-button2',
+						id: 'panel-button3',
 						text: '',
+						tooltipProps: {
+							delayMs: 500,
+							text: state.isFullScreen ? 'Exit full screen' : 'Full screen'
+						},
 						iconProps: {
 							iconName: state.isFullScreen ? 'BackToWindow' : 'FullScreen'
 						},
@@ -175,14 +189,14 @@ const Home = (): JSX.Element => {
 					/>
 				)}
 				{state.endedGames && state.endedGames.length > 0 && (
-					<GamesList listTitle="Ended games" games={state.endedGames} onAllGamesDeleted={() => onAllGamesDeleted()}/>
+					<GamesList listTitle="Ended games" games={state.endedGames} onAllGamesDeleted={() => onAllGamesDeleted()} />
 				)}
 				{state.activeGames?.length === 0 && state.endedGames?.length === 0 && !loading && (
-					<Welcome onNewGameClick={() => togglePanel(true)}/>
+					<Welcome onNewGameClick={() => togglePanel(true)} />
 				)}
 			</PerfectScrollbar>
 			{state.panelShown && (
-				<NewGame onSubmit={onNewGameSubmit} gameUnderEdit={state.gameUnderEdit} onClose={() => togglePanel(false)}/>
+				<NewGame onSubmit={onNewGameSubmit} gameUnderEdit={state.gameUnderEdit} onClose={() => togglePanel(false)} />
 			)}
 		</Page>
 	);

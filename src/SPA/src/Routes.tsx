@@ -25,6 +25,7 @@ import {useInterval} from './services/hooks/useInterval';
 import {parseJwt} from './helpers/helpers';
 import axios from 'axios';
 import {setupRouting} from './helpers/setup-routing';
+import Settings from './components/settings/Settings';
 
 interface State {
 	isLoading: boolean;
@@ -168,6 +169,7 @@ const Routes = (): JSX.Element => {
 						<Switch>
 							<Route exact path="/" component={Home} />
 							<Route exact path="/game/:id" component={Game} />
+							<Route exact path="/settings" component={Settings} />
 							<Route exact path="/error" component={ErrorPage} />
 							<Route exact path="/forbidden" component={Forbidden} />
 							<Route exact path="*" component={Home} />

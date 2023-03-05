@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PokerTime.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using PokerTime.Infrastructure.Data;
 namespace PokerTime.Infrastructure.Migrations
 {
     [DbContext(typeof(PokerTimeContext))]
-    partial class PokerTimeContextModelSnapshot : ModelSnapshot
+    [Migration("20230305102418_PlayingCardDetails")]
+    partial class PlayingCardDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,9 +258,6 @@ namespace PokerTime.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsLegacy")
                         .HasColumnType("bit");
 
                     b.Property<string>("OrganizationId")

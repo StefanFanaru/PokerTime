@@ -9,7 +9,8 @@ namespace PokerTime.Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<PlayingCard> builder)
         {
             builder.Property(x => x.Id).IsRequired().HasMaxLength(36);
-            builder.Property(x => x.Content).IsRequired().HasMaxLength(10);
+            builder.Property(x => x.Content).IsRequired().HasMaxLength(3);
+            builder.Property(x => x.OrganizationId).IsRequired().HasMaxLength(36);
         }
     }
 }
