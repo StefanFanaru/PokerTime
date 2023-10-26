@@ -17,6 +17,7 @@ import {IWorkItemSelectedEvent} from '../../../../../types/client-events/work-it
 import {bookIcon, bugIcon, eyeIcon} from '../../../../../helpers/svgIcons';
 import {actionCreators as gameInfoActionCreators} from '../../../../../store/GameInfoCards';
 import configureStore from '../../../../../store/Store';
+import {IShouldRefreshGame} from '../../../../../types/client-events/should-refresh-game';
 
 interface IProps {
 	isAdmin: boolean;
@@ -65,6 +66,15 @@ const RightMenuItems = (props: IProps): JSX.Element => {
 			subscribeToClientEvents<IWorkItemSelectedEvent>(event => {
 				setState(prevState => {
 					const index = prevState.workItems.findIndex(x => x.id === event.workItemId)!;
+					if (index == -1) {
+						sendSignalREvent({
+							type: ClientEventType.ShouldRefreshGame,
+							payload: {
+								gameId: gameDetails?.id!
+							} as IShouldRefreshGame
+						});
+						return prevState;
+					}
 					prevState.workItems.forEach(x => (x.isSelected = false));
 					prevState.workItems[index].isSelected = true;
 					setActiveWorkItemId(event.workItemId);

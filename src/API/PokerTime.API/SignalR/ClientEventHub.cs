@@ -2,12 +2,15 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using PokerTime.Core.Abstractions;
+using PokerTime.Core.Entities;
 using PokerTime.Infrastructure.ClientEvents;
 using PokerTime.Infrastructure.ClientEvents.Events;
 using PokerTime.Infrastructure.Common.UserInfo;
+using PokerTime.Infrastructure.Data.Repositories;
 
 namespace PokerTime.API.SignalR
 {
@@ -53,7 +56,21 @@ namespace PokerTime.API.SignalR
                 PlayerId = _userInfo.Id
             }, connectionId);
 
+            await SendRefreshIfOwner(connectionId);
+
             _signalRConnectionManager.RemoveConnection(connectionId);
+        }
+
+        private async Task SendRefreshIfOwner(string connectionId)
+        {
+            var userId = _signalRConnectionManager.GetUserId(connectionId);
+            var gameId = _signalRConnectionManager.GetGameId(connectionId);
+            var repository = _serviceProvider.GetRequiredService<IRepository>();
+            var isOwner = await repository.Query<Game>().AnyAsync(x => x.OwnerId == userId && x.Id == gameId);
+            if (isOwner)
+            {
+                await _clientEventSender.SendToAllCoPlayers(new ShouldRefreshGameEvent(), connectionId);
+            }
         }
     }
 }

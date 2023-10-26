@@ -11,6 +11,8 @@ import {Icon} from 'azure-devops-ui/Icon';
 import {replaceAll} from '../../../../../helpers/helpers';
 import {Tooltip} from 'azure-devops-ui/TooltipEx';
 import {bookIcon, bugIcon} from '../../../../../helpers/svgIcons';
+import * as SDK from 'azure-devops-extension-sdk';
+import {IWorkItemFormNavigationService, WorkItemTrackingServiceIds} from 'azure-devops-extension-api/WorkItemTracking';
 
 interface State {
 	imageSrcUnderView?: string;
@@ -45,6 +47,13 @@ const GameWorkItem = (): JSX.Element => {
 		setState(prevState => ({...prevState, imageSrcUnderView: undefined}));
 	}
 
+	async function onItemTitleClick() {
+		const service = await SDK.getService<IWorkItemFormNavigationService>(
+			WorkItemTrackingServiceIds.WorkItemFormNavigationService
+		);
+		await service.openWorkItem(activeWorkItem?.id!, false);
+	}
+
 	return state.workItem ? (
 		<div className="game-work-item-wrapper">
 			{state.imageSrcUnderView && <ImageViewer imageSrc={state?.imageSrcUnderView} onClose={onImageViewerClose} />}
@@ -52,7 +61,7 @@ const GameWorkItem = (): JSX.Element => {
 				<div className="icon">{state.workItem.type == WorkItemType.UserStory ? bookIcon : bugIcon}</div>
 				<div className="details">
 					<Tooltip overflowOnly={true} delayMs={500} text={state.workItem.title}>
-						<div className="title">
+						<div className="title" onClick={onItemTitleClick}>
 							{state.workItem.id} - {state.workItem.title}
 						</div>
 					</Tooltip>

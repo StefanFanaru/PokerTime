@@ -24,6 +24,20 @@ namespace PokerTime.API.SignalR
             throw new KeyNotFoundException($"ConnectionId {connectionId} not found");
         }
 
+        public string GetGameId(string connectionId)
+        {
+            foreach (var (gameId, users) in ConnectionMap)
+            {
+                var userId = users.FirstOrDefault(x => x.Value.Contains(connectionId)).Key;
+                if (userId != null)
+                {
+                    return gameId;
+                }
+            }
+
+            throw new KeyNotFoundException($"ConnectionId {connectionId} not found");
+        }
+
         public void AddConnection(string userId, string gameId, string connectionId)
         {
             var connections = GetUserConnections(userId, gameId);
@@ -33,7 +47,8 @@ namespace PokerTime.API.SignalR
                 connections.Add(connectionId);
             }
 
-            Log.Debug($"User {userId} has established a connection with the client. Total connections: {connections.Count}");
+            Log.Debug(
+                $"User {userId} has established a connection with the client. Total connections: {connections.Count}");
         }
 
         public void RemoveConnection(string connectionId)

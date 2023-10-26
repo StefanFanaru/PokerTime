@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PokerTime.Core.Abstractions;
@@ -27,9 +28,7 @@ public class GameRoundInsertCommandHandler : IRequestHandler<GameRoundInsertComm
         var query = _repository.Query<GameRound>()
             .Where(x => x.GameId == request.GameId.ToString())
             .Where(x => x.WorkItemId == request.WorkItemId);
-        var roundId = await _repository.Query<GameRound>()
-            .Where(x => x.GameId == request.GameId.ToString())
-            .Where(x => x.WorkItemId == request.WorkItemId)
+        var roundId = await query
             .Select(x => x.Id)
             .FirstOrDefaultAsync(cancellationToken);
         var gamePlayersIds = await _repository.Query<GameRoundPlayer>()
@@ -61,13 +60,21 @@ public class GameRoundInsertCommandHandler : IRequestHandler<GameRoundInsertComm
                 SubmittedStoryPoints = x.SubmittedStoryPoints,
                 WorkItemId = x.WorkItemId,
                 ActivePlayersIds = activePlayersIds
-            }).SingleAsync(cancellationToken);
+            }).FirstOrDefaultAsync(cancellationToken);
             return ResultBuilder.Ok(result);
         }
 
         var gameRound = new GameRound(request.GameId.ToString(), request.WorkItemId);
-        _repository.Insert(gameRound);
-        await _repository.SaveAsync(cancellationToken);
+        try
+        {
+            _repository.Insert(gameRound);
+            await _repository.SaveAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
         await InsertRoundPlayer(gameRound.Id, request.User.Id);
 
         return ResultBuilder.Ok(new GameRoundInsertCommandResponse

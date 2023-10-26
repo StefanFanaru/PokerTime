@@ -205,7 +205,7 @@ const Game = (): JSX.Element => {
 				workItemId: currentActiveWorkItemId
 			}
 		});
-		setActiveWorkItemId(currentActiveWorkItemId);
+		setActiveWorkItemId(response!.data.activeWorkItemId!);
 		if (shouldRefreshGame) {
 			setShouldRefreshGame(false);
 		}

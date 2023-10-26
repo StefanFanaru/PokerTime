@@ -41,7 +41,10 @@ namespace PokerTime.API
                 options.SerializerSettings.Converters.Add(new JsonMapper.UtcDateTimeConverter());
                 options.SerializerSettings.Converters.Add(new OperationResultConverter());
             });
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "PokerTime.API", Version = "v1" }); });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PokerTime.API", Version = "v1" });
+            });
             services.AddHandlers(typeof(InfrastructureAssembly).Assembly).WithPipelineValidation();
         }
 
@@ -93,7 +96,7 @@ namespace PokerTime.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PokerTime.API v1"));
             }
 
-            app.ConfigureExceptionMiddleware(env.IsProduction());
+            app.ConfigureExceptionMiddleware(env.IsDevelopment());
 
             app.UseHsts();
             app.UseHttpsRedirection();
