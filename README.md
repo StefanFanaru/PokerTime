@@ -1,5 +1,8 @@
 # PokerTime for Azure DevOps
 
+## NOTICE:
+## This is no longer maintained or hosted. Please feel free to clone it and use it at your discretion.
+
 Are you tired of having to manually update your Azure DevOps work items with the results of your Sprint Planning meetings?<br>
 Do you want to have a clear history of the votes each team member has cast for each work item?<br>
 Enter PokerTime for Azure DevOps!
